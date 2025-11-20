@@ -804,7 +804,6 @@
                 navItems.forEach(item => {
                     const itemIndex = parseInt(item.dataset.slideIndex);
                     const isSubItem = item.classList.contains('nav-subitem');
-                    // Ativa o item principal, mas não desativa subitens explicitamente aqui
                     if (!isSubItem) {
                          item.classList.toggle('active', itemIndex === index);
                     }
@@ -829,7 +828,6 @@
                             const sectionElement = document.getElementById(sectionId);
                             if (sectionElement) {
                                 sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                // Highlight visual temporário
                                 sectionElement.style.transition = 'color 0.5s';
                                 const originalColor = sectionElement.style.color;
                                 sectionElement.style.color = 'var(--accent)';
@@ -855,22 +853,20 @@
                 });
             });
 
-            // Navegação via Teclado (Setas)
+            // --- Navegação via Teclado (Esquerda/Direita/Cima/Baixo) ---
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'ArrowLeft') {
-                    // Slide anterior
                     showSlide(currentSlide - 1);
                 } else if (event.key === 'ArrowRight') {
-                    // Próximo slide
                     showSlide(currentSlide + 1);
                 } else if (event.key === 'ArrowUp') {
-                    // Rolar conteúdo para cima
-                    event.preventDefault(); // Impede a rolagem da página inteira se houver
-                    mainContent.scrollBy({ top: -100, behavior: 'smooth' });
-                } else if (event.key === 'ArrowDown') {
-                    // Rolar conteúdo para baixo
+                    // Rola o conteúdo principal para cima suavemente
                     event.preventDefault();
-                    mainContent.scrollBy({ top: 100, behavior: 'smooth' });
+                    mainContent.scrollBy({ top: -150, behavior: 'smooth' });
+                } else if (event.key === 'ArrowDown') {
+                    // Rola o conteúdo principal para baixo suavemente
+                    event.preventDefault();
+                    mainContent.scrollBy({ top: 150, behavior: 'smooth' });
                 }
             });
             
@@ -880,4 +876,3 @@
     </script>
 </body>
 </html>
-       
