@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+
+     
+       <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -367,7 +369,7 @@
             padding: 40px;
             min-height: 80vh; 
             position: relative;
-            overflow: hidden; /* Correção para o botão funcionar */
+            overflow: hidden; /* Impede que a animação cubra botões */
         }
          .slide-cover::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -389,7 +391,7 @@
             margin-top: 40px; 
             padding-top: 20px;
             border-top: 1px solid var(--border);
-            position: relative; /* Correção: Garante que os botões estejam acima do fundo */
+            position: relative; /* Garante que fique acima do fundo */
             z-index: 10;
         }
         .nav-btn {
@@ -804,7 +806,6 @@
                 navItems.forEach(item => {
                     const itemIndex = parseInt(item.dataset.slideIndex);
                     const isSubItem = item.classList.contains('nav-subitem');
-                    // Ativa o item principal, mas não desativa subitens explicitamente aqui
                     if (!isSubItem) {
                          item.classList.toggle('active', itemIndex === index);
                     }
@@ -814,6 +815,7 @@
                 mainContent.scrollTop = 0;
             }
             
+            // Navegação via Menu
             navItems.forEach(item => {
                 item.addEventListener('click', () => {
                     const slideIndex = parseInt(item.dataset.slideIndex);
@@ -828,7 +830,6 @@
                             const sectionElement = document.getElementById(sectionId);
                             if (sectionElement) {
                                 sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                // Highlight visual temporário
                                 sectionElement.style.transition = 'color 0.5s';
                                 const originalColor = sectionElement.style.color;
                                 sectionElement.style.color = 'var(--accent)';
@@ -839,6 +840,7 @@
                 });
             });
             
+            // Navegação via Botões (Clique)
             prevBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const idx = parseInt(btn.id.split('-')[1]);
@@ -851,6 +853,15 @@
                      const idx = parseInt(btn.id.split('-')[1]);
                      showSlide(idx + 1);
                 });
+            });
+
+            // --- NOVO: Navegação via Teclado (Setas) ---
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'ArrowLeft') {
+                    showSlide(currentSlide - 1);
+                } else if (event.key === 'ArrowRight') {
+                    showSlide(currentSlide + 1);
+                }
             });
             
             lucide.createIcons();
