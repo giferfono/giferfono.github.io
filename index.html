@@ -8,25 +8,26 @@
     
     <style>
         :root {
-            /* Paleta de cores refinada */
-            --primary: #1a5276;    /* Azul Petróleo Escuro */
-            --secondary: #2980b9;  /* Azul Institucional */
-            --accent: #27ae60;     /* Verde Sucesso/Destaque */
-            --light: #f8f9fa;      /* Fundo Off-white */
-            --dark: #2c3e50;       /* Texto Principal */
-            --border: #dee2e6;     /* Bordas */
+            /* Paleta de Cores do Código 2 (Mantida como Base) */
+            --primary: #1e3c72;    /* Azul Profundo */
+            --secondary: #2a5298;  /* Azul Vibrante */
+            --accent: #00b09b;     /* Verde Tiffanys/Teal */
+            --light: #f0f2f5;      /* Cinza Muito Claro */
+            --dark: #2d3436;       /* Grafite */
             --white: #ffffff;
-            --warning: #f39c12;
+            --warning: #f1c40f;
             --danger: #e74c3c;
+            --success: #27ae60;
+            --border: #dfe6e9;
+            --card-shadow: 0 8px 30px rgba(0,0,0,0.06);
             --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
             scroll-behavior: smooth;
         }
         
@@ -41,236 +42,183 @@
             min-height: 100vh;
         }
         
-        /* Sidebar */
+        /* --- SIDEBAR --- */
         .sidebar {
-            width: 290px;
-            background: linear-gradient(160deg, var(--primary), #154360);
-            color: var(--light);
-            padding: 25px 15px;
+            width: 280px;
+            background: linear-gradient(180deg, var(--primary) 0%, #102040 100%);
+            color: var(--white);
+            padding: 30px 20px;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 5px 0 20px rgba(0,0,0,0.1);
-            transition: var(--transition);
+            box-shadow: 4px 0 25px rgba(0,0,0,0.1);
         }
         
         .sidebar-header {
             text-align: center;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         .sidebar-header h2 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            color: var(--white);
-            font-weight: 600;
-        }
-         .sidebar-header svg { color: var(--accent); }
-        
-        .sidebar-header p {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            color: #bdc3c7; 
         }
         
         .nav-menu { list-style: none; }
-
-        .nav-section { margin-bottom: 25px; }
-
         .nav-section-title {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0 0 10px 10px;
-            color: #bdc3c7; 
+            letter-spacing: 1.2px;
+            color: rgba(255,255,255,0.5);
+            margin: 25px 0 10px 10px;
             font-weight: 700;
         }
 
         .nav-item {
-            padding: 12px 18px;
-            margin: 5px 0;
-            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 6px 0;
+            border-radius: 10px;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 12px;
             font-size: 0.9rem;
-            font-weight: 500;
-            color: #ecf0f1; 
-            position: relative;
+            color: rgba(255,255,255,0.85);
         }
         
         .nav-item:hover {
             background-color: rgba(255,255,255,0.1);
-            transform: translateX(5px);
+            transform: translateX(4px);
+            color: var(--white);
         }
         
         .nav-item.active {
-            background-color: var(--secondary);
+            background: linear-gradient(90deg, var(--accent), transparent);
             color: var(--white);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             font-weight: 600;
+            box-shadow: -4px 4px 10px rgba(0,0,0,0.2);
         }
         
-        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-        
-        /* Sub-item de navegação */
-        .nav-subitem {
-            padding: 8px 18px 8px 45px; 
-            margin: 2px 0 2px 5px;
-            border-left: 2px solid rgba(255,255,255,0.1);
-            font-size: 0.85rem;
-            opacity: 0.85;
-        }
-        .nav-subitem:hover {
-            opacity: 1;
-            border-left-color: var(--accent);
-            background-color: rgba(255,255,255,0.05);
-        }
-        
-        /* Conteúdo Principal */
+        /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1;
-            margin-left: 290px;
-            padding: 30px;
+            margin-left: 280px;
+            padding: 40px;
             position: relative;
             height: 100vh;
-            overflow-y: auto; 
+            overflow-y: auto;
         }
         
         .slide {
             display: none;
             background-color: var(--white);
-            border-radius: 12px;
+            border-radius: 20px;
             box-shadow: var(--card-shadow);
             padding: 40px;
-            margin-bottom: 30px; 
-            min-height: 90vh; 
-            animation: slideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            margin-bottom: 40px;
+            min-height: 90vh;
+            animation: fadeInSlide 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
         
-        .slide::before { 
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
+        .slide::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
             background: linear-gradient(90deg, var(--secondary), var(--accent));
         }
         
         .slide.active { display: block; }
-        
+
+        /* --- TYPOGRAPHY & HEADERS --- */
         .slide-header {
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
         }
         
         .slide-header h2 {
             font-size: 2rem;
-            font-weight: 700;
             color: var(--primary);
+            font-weight: 800;
+            background: -webkit-linear-gradient(0deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-         .slide-header svg { width: 32px; height: 32px; color: var(--secondary); }
-        
-        .slide-content {
-            line-height: 1.6;
-            color: #495057;
-            font-size: 1rem;
-        }
-        
+
         h3.section-title {
+            font-size: 1.4rem;
             color: var(--secondary);
-            margin: 35px 0 20px;
-            font-size: 1.5rem;
-            font-weight: 600;
+            margin: 30px 0 15px 0;
             display: flex;
             align-items: center;
             gap: 10px;
-            border-left: 4px solid var(--accent);
-            padding-left: 15px;
         }
         
         h4.subsection-title {
-            color: var(--primary);
-            margin: 25px 0 15px;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        /* Cards de Conteúdo */
-        .content-card {
-            background: var(--white);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            transition: var(--transition);
-        }
-
-        .content-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-
-        .card-title {
             font-size: 1.1rem;
             color: var(--primary);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
             font-weight: 700;
+            margin-bottom: 10px;
         }
 
-        .card-title svg {
-            margin-right: 10px;
-            color: var(--accent);
-            width: 20px;
-            height: 20px;
-        }
-        
-        .content-card ul {
-            padding-left: 25px;
-            margin-top: 10px;
-            list-style: none;
-        }
-        .content-card li {
+        /* --- CARDS & LAYOUTS --- */
+        .content-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
             position: relative;
-            padding-left: 20px; 
-            margin-bottom: 8px;
+            overflow: hidden;
+            height: 100%;
         }
-        .content-card li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            border-color: var(--accent);
+        }
+        .card-icon {
+            width: 40px; height: 40px;
+            background: rgba(42, 82, 152, 0.1);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
             color: var(--secondary);
-            font-weight: bold;
-            font-size: 1.2rem;
-            line-height: 1rem;
+            margin-bottom: 15px;
         }
         
-        /* Grid Container */
+        .content-card ul { padding-left: 20px; margin-top: 10px; list-style: none; }
+        .content-card li { position: relative; padding-left: 20px; margin-bottom: 10px; color: #555; }
+        .content-card li::before {
+            content: '•'; position: absolute; left: 0; color: var(--secondary);
+            font-weight: bold; font-size: 1.2rem; line-height: 1rem;
+        }
+        .card-title {
+            font-size: 1.1rem; color: var(--primary); margin-bottom: 10px;
+            display: flex; align-items: center; font-weight: 700; gap: 10px;
+        }
+
+        /* --- CLASSES ADICIONADAS --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin: 20px 0;
         }
-        
-        /* Info Card (Pequenos blocos) */
-         .info-card {
+
+        .info-card {
             background: #fdfdfd;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -283,34 +231,18 @@
             transform: translateY(-5px);
             border-top-color: var(--accent);
         }
-        .info-card h3 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
         .info-card h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 1rem; font-weight: 600; color: var(--primary);
+            margin-bottom: 5px; display: flex; align-items: center; gap: 8px;
         }
         .info-card p { font-size: 0.9rem; color: #666; }
 
-        /* Cartões de Estatística */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
-        
         .stat-card {
             background: var(--white);
             padding: 25px 20px;
@@ -321,196 +253,158 @@
             transition: var(--transition);
         }
         .stat-card:hover { transform: scale(1.03); }
-         .stat-icon svg { width: 40px; height: 40px; margin-bottom: 15px; color: var(--secondary); }
-        .stat-number { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; color: var(--primary); }
+        .stat-icon svg { width: 40px; height: 40px; margin-bottom: 15px; color: var(--secondary); }
+        .stat-number { font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; color: var(--primary); }
         .stat-label { font-size: 0.9rem; color: #7f8c8d; font-weight: 500; }
-        
-        /* Fluxograma Visual */
-        .flowchart {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin: 30px auto;
-            max-width: 600px;
-        }
-        .flow-step {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--white);
-            padding: 12px 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            width: 100%;
-            justify-content: space-between;
-            transition: var(--transition);
-        }
-        .flow-step:hover { transform: scale(1.02); border-color: var(--secondary); }
-        .flow-left { display: flex; align-items: center; gap: 10px; }
-        .flow-step svg { width: 18px; height: 18px; color: var(--secondary); }
-        .flow-step strong { color: var(--primary); font-weight: 700; }
-        .flow-step.excluded { background: #fff5f5; border-left: 4px solid var(--danger); }
-        .flow-step.excluded svg { color: var(--danger); }
-        .flow-step.final { background: #f0f9eb; border-left: 4px solid var(--accent); }
-        .flow-step.final svg { color: var(--accent); }
-        .flow-arrow { color: #bdc3c7; }
-        
-        /* Slide de Capa */
-        .slide-cover {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-            min-height: 80vh; 
-            position: relative;
-            overflow: hidden; 
-        }
-         .slide-cover::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(41, 128, 185, 0.03) 0%, rgba(255, 255, 255, 0) 70%);
-            z-index: 0; animation: rotateBackground 30s linear infinite;
-         }
-         @keyframes rotateBackground { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-         .slide-cover > * { position: relative; z-index: 1; }
-         .slide-cover h1 { font-size: 2.4rem; color: var(--primary); margin-bottom: 15px; font-weight: 800; line-height: 1.2; }
-         .slide-cover h3 { font-size: 1.4rem; color: var(--secondary); font-weight: 500; margin-bottom: 40px; letter-spacing: 1px; }
-         .cover-details { margin-top: 20px; font-size: 1rem; color: #555; line-height: 1.6; }
-         .cover-details strong { color: var(--dark); }
-         .slide-cover hr { width: 60px; border: 2px solid var(--accent); margin: 25px 0; }
 
-        /* Controles de Navegação */
-        .nav-controls {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px; 
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-            position: relative; 
-            z-index: 10;
-        }
-        .nav-btn {
-            padding: 10px 25px; 
-            background-color: var(--white);
-            color: var(--primary); 
-            border: 1px solid var(--primary);
-            border-radius: 50px; 
-            cursor: pointer;
-            transition: var(--transition); 
-            font-weight: 600; 
-            display: flex; align-items: center; gap: 8px;
-        }
-        .nav-btn:hover { background-color: var(--primary); color: white; }
-        .nav-btn:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; background: transparent; }
+        /* Grades */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+
+        /* Timeline e Flowchart */
+        .timeline { position: relative; padding-left: 30px; margin: 20px 0; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--border); border-radius: 2px; }
+        .timeline-item { position: relative; margin-bottom: 25px; }
+        .timeline-dot { position: absolute; left: -36px; top: 0; width: 15px; height: 15px; background: var(--secondary); border: 3px solid var(--white); border-radius: 50%; box-shadow: 0 0 0 2px var(--secondary); }
         
-        /* Animação de Entrada */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .flow-diagram { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .flow-box { background: white; padding: 12px 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; width: 90%; max-width: 400px; font-weight: 600; color: var(--dark); position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .flow-box.start { background: var(--primary); color: white; border: none; }
+        .flow-box.end { background: var(--accent); color: white; border: none; }
+        .flow-arrow { color: #bdc3c7; }
+
+        /* Slide Cover */
+        .slide-cover { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 80vh; position: relative; overflow: hidden; }
+        .bg-circle { position: absolute; border-radius: 50%; opacity: 0.05; z-index: 0; }
+        .c1 { width: 400px; height: 400px; background: var(--secondary); top: -100px; left: -100px; }
+        .c2 { width: 300px; height: 300px; background: var(--accent); bottom: -50px; right: -50px; }
+        .c3 { width: 150px; height: 150px; border: 20px solid var(--primary); top: 20%; right: 10%; }
+        .cover-content { position: relative; z-index: 2; }
+        .cover-icon-lg { width: 100px; height: 100px; background: rgba(42, 82, 152, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; color: var(--primary); }
+
+        /* --- THANK YOU SLIDE STYLES (SLIDE 8) --- */
+        .thank-you-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; min-height: 70vh; text-align: center;
         }
+        .ty-title {
+            font-size: 3.5rem; font-weight: 800; color: var(--primary); margin-bottom: 10px;
+            background: -webkit-linear-gradient(0deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: popIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .ty-subtitle { font-size: 1.5rem; color: var(--secondary); margin-bottom: 40px; opacity: 0; animation: fadeInSlide 1s forwards 0.3s; }
         
+        /* Dynamic Shapes */
+        .shape { position: absolute; opacity: 0.6; animation: float 6s infinite ease-in-out; }
+        .s1 { top: 20%; left: 10%; color: var(--accent); animation-delay: 0s; }
+        .s2 { bottom: 20%; right: 10%; color: var(--secondary); animation-delay: 2s; }
+        .s3 { top: 15%; right: 20%; color: var(--warning); animation-delay: 1s; }
+        .s4 { bottom: 15%; left: 20%; color: var(--primary); animation-delay: 3s; }
+
+        /* Controles */
+        .nav-controls { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); position: relative; z-index: 10; }
+        .btn-nav { padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: var(--transition); font-size: 0.95rem; }
+        .btn-prev { background: white; border: 1px solid var(--border); color: var(--dark); }
+        .btn-prev:hover { background: #f8f9fa; transform: translateX(-5px); }
+        .btn-next { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3); }
+        .btn-next:hover { background: var(--secondary); transform: translateX(5px); box-shadow: 0 6px 20px rgba(30, 60, 114, 0.4); }
+        .btn-nav:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        /* Animations */
+        @keyframes fadeInSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
         /* Responsividade */
-        @media (max-width: 992px) {
-            .sidebar { width: 240px; }
-            .main-content { margin-left: 240px; }
-        }
-        
-        @media (max-width: 768px) {
-            .container { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: relative; padding: 15px; }
-            .main-content { margin-left: 0; padding: 15px; }
-            .stats-container { grid-template-columns: 1fr; }
-            .slide { padding: 20px; min-height: auto; }
-            .slide-header h2 { font-size: 1.5rem; }
-            .flowchart { width: 100%; }
+        @media (max-width: 900px) {
+            .sidebar { width: 70px; padding: 20px 10px; }
+            .sidebar-header h2 span, .sidebar-header p, .nav-section-title, .nav-item span { display: none; }
+            .main-content { margin-left: 70px; padding: 20px; }
+            .nav-item { justify-content: center; }
+            .grid-2, .grid-3, .grid-4, .grid-container, .stats-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <i data-lucide="cpu"></i>
-                <h2>Tecnologia & Fono</h2>
-                <p>Giullia Ferreira Rodrigues, 2025</p>
+                <i data-lucide="cpu" size="32" color="#00b09b"></i>
+                <h2><span>Tecno</span>Fono</h2>
+                <p>TCC 2025</p>
             </div>
             
             <ul class="nav-menu">
-                <li class="nav-section">
-                    <div class="nav-section-title">Navegação</div>
-                    <ul style="list-style:none;">
-                        <li class="nav-item active" data-slide-index="0">
-                            <i data-lucide="home"></i> <span>Capa</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="1">
-                            <i data-lucide="info"></i> <span>1. Introdução</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="2">
-                            <i data-lucide="book-open"></i> <span>2. Fundamentação</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="3">
-                            <i data-lucide="crosshair"></i> <span>3. Objetivos</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="4">
-                            <i data-lucide="search"></i> <span>4. Metodologia</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="5">
-                            <i data-lucide="bar-chart-2"></i> <span>5. Resultados</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="6">
-                            <i data-lucide="check-circle"></i> <span>6. Conclusão</span>
-                        </li>
-                        <li class="nav-item" data-slide-index="7">
-                            <i data-lucide="file-text"></i> <span>7. Referências</span>
-                        </li>
-                    </ul>
+                <div class="nav-section-title">Principal</div>
+                <li class="nav-item active" data-slide="0">
+                    <i data-lucide="home"></i> <span>Capa</span>
                 </li>
-
-                <li class="nav-section">
-                    <div class="nav-section-title">Tópicos Chave</div>
-                    <ul style="list-style:none;">
-                         <li class="nav-item nav-subitem" data-slide-index="2" data-section="sec-2-3">
-                            <span>Aplicações de Software</span>
-                        </li>
-                        <li class="nav-item nav-subitem" data-slide-index="2" data-section="sec-2-4">
-                            <span>Desafios e LGPD</span>
-                        </li>
-                         <li class="nav-item nav-subitem" data-slide-index="5" data-section="sec-5-1">
-                            <span>Benefícios Clínicos</span>
-                        </li>
-                         <li class="nav-item nav-subitem" data-slide-index="5" data-section="sec-5-3">
-                            <span>Lacuna Científica</span>
-                        </li>
-                    </ul>
+                <li class="nav-item" data-slide="1">
+                    <i data-lucide="info"></i> <span>1. Introdução</span>
+                </li>
+                <li class="nav-item" data-slide="2">
+                    <i data-lucide="book-open"></i> <span>2. Fundamentação</span>
+                </li>
+                <li class="nav-item" data-slide="3">
+                    <i data-lucide="crosshair"></i> <span>3. Objetivos</span>
+                </li>
+                <li class="nav-item" data-slide="4">
+                    <i data-lucide="search"></i> <span>4. Metodologia</span>
+                </li>
+                <li class="nav-item" data-slide="5">
+                    <i data-lucide="bar-chart-2"></i> <span>5. Resultados</span>
+                </li>
+                <li class="nav-item" data-slide="6">
+                    <i data-lucide="check-circle"></i> <span>6. Conclusão</span>
+                </li>
+                <li class="nav-item" data-slide="7">
+                    <i data-lucide="file-text"></i> <span>7. Referências</span>
                 </li>
             </ul>
         </div>
-        
+
         <div class="main-content">
-            
+
+            <!-- Slide 0: Capa -->
             <div class="slide active" id="slide-0">
                 <div class="slide-cover">
-                    <i data-lucide="monitor-smartphone" style="width:80px; height:80px; color: var(--secondary); margin-bottom: 20px;"></i>
-                    <h1>O USO DE TECNOLOGIAS DE SOFTWARE EM TERAPIA FONOAUDIOLÓGICA</h1>
-                    <h3>REVISÃO DE LITERATURA</h3>
-                    <hr>
-                    <div class="cover-details">
-                        <p><strong>Autora:</strong> Giullia Ferreira Rodrigues</p>
-                        <p><strong>Orientadora:</strong> Profa. Dra. Thais Antonelli Diniz Hein</p>
-                        <br>
-                        <p style="font-size: 0.9rem; opacity: 0.8;">PONTIFÍCIA UNIVERSIDADE CATÓLICA DE CAMPINAS<br>ESCOLA DE CIÊNCIAS DA VIDA<br>FACULDADE DE FONOAUDIOLOGIA</p>
-                        <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">CAMPINAS, 2025</p>
+                    <div class="bg-circle c1"></div>
+                    <div class="bg-circle c2"></div>
+                    <div class="bg-circle c3"></div>
+                    
+                    <div class="cover-content">
+                        <div class="cover-icon-lg">
+                            <i data-lucide="monitor-smartphone" size="48"></i>
+                        </div>
+                        <h1 style="font-size: 2.5rem; font-weight: 900; color: var(--primary); margin-bottom: 15px; line-height: 1.2;">
+                            O USO DE TECNOLOGIAS DE SOFTWARE <br> EM TERAPIA FONOAUDIOLÓGICA
+                        </h1>
+                        <h3 style="font-size: 1.5rem; font-weight: 400; color: var(--secondary); letter-spacing: 2px; margin-bottom: 40px;">
+                            REVISÃO DE LITERATURA
+                        </h3>
+                        
+                        <div style="background: white; padding: 20px 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: inline-block;">
+                            <p style="font-size: 1.1rem; color: var(--dark);"><strong>Autora:</strong> Giullia Ferreira Rodrigues</p>
+                            <p style="font-size: 1.1rem; color: var(--dark);"><strong>Orientadora:</strong> Profa. Dra. Thais Antonelli Diniz Hein</p>
+                            <hr style="margin: 15px 0; border-color: #eee;">
+                            <p style="font-size: 0.9rem; color: #777;">
+                                PONTIFÍCIA UNIVERSIDADE CATÓLICA DE CAMPINAS<br>
+                                ESCOLA DE CIÊNCIAS DA VIDA • FACULDADE DE FONOAUDIOLOGIA<br>
+                                2025
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-0" disabled> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-0"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev" disabled>Anterior</button>
+                    <button class="btn-nav btn-next">Começar <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
 
+            <!-- Slide 1: Introdução -->
             <div class="slide" id="slide-1">
                 <div class="slide-header">
                     <i data-lucide="info"></i>
@@ -539,69 +433,69 @@
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-1"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-1"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <button class="btn-nav btn-next">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
-            
+
+            <!-- Slide 2: Fundamentação -->
             <div class="slide" id="slide-2">
                 <div class="slide-header">
-                    <i data-lucide="book-open"></i>
+                    <i data-lucide="book-open" size="32" color="#2a5298"></i>
                     <h2>2. FUNDAMENTAÇÃO TEÓRICA</h2>
                 </div>
-                <div class="slide-content">
-                    
-                    <h3 class="section-title">2.1 Fonoaudiologia e Áreas</h3>
-                    <p>Profissão regulamentada pela <strong>Lei nº 6.965/1981</strong>. Atuação preventiva, diagnóstica e terapêutica nas áreas de:</p>
-                    <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 15px;">
-                        <div class="info-card" style="text-align: center;">Audiologia</div>
-                        <div class="info-card" style="text-align: center;">Linguagem</div>
-                        <div class="info-card" style="text-align: center;">Motricidade</div>
-                        <div class="info-card" style="text-align: center;">Voz</div>
-                        <div class="info-card" style="text-align: center;">Disfagia</div>
-                    </div>
 
-                    <h3 class="section-title" id="sec-2-3">2.3 e 2.4 Tecnologias de Software</h3>
+                <h3 class="section-title">2.1 Fonoaudiologia e Áreas</h3>
+                <p style="margin-bottom: 20px; color: #666;">Profissão regulamentada pela <strong>Lei nº 6.965/1981</strong>. Atuação preventiva, diagnóstica e terapêutica nas áreas de:</p>
+
+                <div class="grid-3" style="margin-bottom: 30px;">
+                    <div class="info-card">Audiologia</div>
+                    <div class="info-card">Linguagem</div>
+                    <div class="info-card">Motricidade</div>
+                    <div class="info-card">Voz</div>
+                    <div class="info-card">Disfagia</div>
+                </div>
+
+                <h3 class="section-title" id="sec-2-3">2.3 e 2.4 Tecnologias de Software</h3>
+                <div class="grid-2">
                     <div class="content-card">
-                        <div class="card-title"><i data-lucide="video"></i> Telefonoaudiologia</div>
+                        <div class="card-icon"><i data-lucide="video"></i></div>
+                        <h4 class="subsection-title">Telefonoaudiologia</h4>
                         <ul>
                             <li><strong>Síncrona:</strong> Tempo real (videoconferência).</li>
                             <li><strong>Assíncrona:</strong> Envio de dados/exames para análise posterior.</li>
                             <li>Regulamentada pelo CFFa (Resolução Nº 580/2020 e Nº 615/2021).</li>
                         </ul>
                     </div>
-                    
-                    <div class="grid-container">
-                        <div class="info-card">
-                             <h4><i data-lucide="settings"></i> Avaliação</h4>
-                             <p>Análise acústica (Voz), audiômetros digitais e mapeamento de IC/AASI.</p>
-                        </div>
-                        <div class="info-card">
-                             <h4><i data-lucide="play-circle"></i> Intervenção</h4>
-                             <p>Softwares como <em>GraphoGame</em> (Linguagem), <em>Afinando o Cérebro</em> (Auditivo) e <em>SpeechEasy</em> (Gagueira).</p>
-                        </div>
-                         <div class="info-card">
-                             <h4><i data-lucide="smile"></i> Gamificação</h4>
-                             <p>Plataformas como <em>Wordwall</em> e <em>GameFono</em> para engajamento lúdico.</p>
-                        </div>
-                    </div>
 
-                    <h3 class="section-title" id="sec-2-4" style="border-left-color: var(--danger);">2.5 Desafios e Ética</h3>
                     <div class="content-card">
-                         <div class="card-title"><i data-lucide="shield-alert"></i> Segurança e Acesso</div>
-                         <ul>
-                             <li><strong>LGPD:</strong> Dados de saúde são sensíveis; exigem consentimento e segurança robusta.</li>
-                             <li><strong>Exclusão Digital:</strong> Disparidade de acesso fere o princípio da justiça.</li>
-                             <li><strong>Sigilo Profissional:</strong> Vulnerabilidade na transmissão de dados.</li>
-                         </ul>
+                        <div class="card-icon"><i data-lucide="play-circle"></i></div>
+                        <h4 class="subsection-title">Intervenção e Avaliação</h4>
+                        <ul>
+                            <li>Análise acústica (Voz) e Audiômetros digitais.</li>
+                            <li>Softwares: <em>GraphoGame</em> (Linguagem), <em>Afinando o Cérebro</em> (Auditivo).</li>
+                            <li>Gamificação (Wordwall, GameFono).</li>
+                        </ul>
                     </div>
                 </div>
+
+                <h3 class="section-title" id="sec-2-4" style="border-left-color: var(--danger);">2.5 Desafios e Ética</h3>
+                <div class="content-card">
+                     <div class="card-title"><i data-lucide="shield-alert"></i> Segurança e Acesso</div>
+                     <ul>
+                         <li><strong>LGPD:</strong> Dados de saúde são sensíveis; exigem consentimento e segurança robusta.</li>
+                         <li><strong>Exclusão Digital:</strong> Disparidade de acesso fere o princípio da justiça.</li>
+                         <li><strong>Sigilo Profissional:</strong> Vulnerabilidade na transmissão de dados.</li>
+                     </ul>
+                </div>
+
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-2"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-2"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <button class="btn-nav btn-next">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
 
+            <!-- Slide 3: Objetivos -->
             <div class="slide" id="slide-3">
                 <div class="slide-header">
                     <i data-lucide="crosshair"></i>
@@ -612,74 +506,75 @@
                         <div class="card-title"><i data-lucide="target"></i> Objetivo Geral</div>
                         <p style="font-size: 1.1rem; font-weight: 500;">Analisar a incidência e o contexto de utilização de tecnologias de software na prática da terapia fonoaudiológica.</p>
                     </div>
-                    
-                    <h4 class="subsection-title">Objetivos Específicos</h4>
-                    <div class="grid-container">
-                         <div class="info-card">
-                            <i data-lucide="search" style="color: var(--accent); margin-bottom: 10px;"></i>
-                            <p><strong>Identificar Tipos:</strong> Quais softwares são mais empregados.</p>
-                        </div>
-                        <div class="info-card">
-                            <i data-lucide="map" style="color: var(--accent); margin-bottom: 10px;"></i>
-                            <p><strong>Descrever Áreas:</strong> Finalidades terapêuticas (Voz, Linguagem, etc.).</p>
-                        </div>
-                        <div class="info-card">
-                            <i data-lucide="thumbs-up" style="color: var(--accent); margin-bottom: 10px;"></i>
-                            <p><strong>Investigar Impacto:</strong> Vantagens, desvantagens e desafios da implementação.</p>
-                        </div>
-                    </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-3"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-3"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <button class="btn-nav btn-next">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
 
+            <!-- Slide 4: Metodologia -->
             <div class="slide" id="slide-4">
                 <div class="slide-header">
-                    <i data-lucide="search"></i>
+                    <i data-lucide="search" size="32" color="#2a5298"></i>
                     <h2>4. METODOLOGIA</h2>
                 </div>
-                <div class="slide-content">
-                    <div class="content-card">
-                        <div class="card-title"><i data-lucide="file-text"></i> Desenho do Estudo</div>
-                        <p>Revisão de literatura (2000–2025) nas bases <strong>LILACS, SciELO e PUBMED</strong>. Descritores: Fonoaudiologia, Tecnologia, Terapia, Software, Aplicativo.</p>
+
+                <div class="grid-2">
+                    <div>
+                        <h3 class="section-title" style="margin-top: 0;">Desenho do Estudo</h3>
+                        <div class="content-card">
+                            <p style="margin-bottom: 15px;">
+                                <strong>Tipo:</strong> Revisão de literatura integrativa com abordagem quantitativa.
+                            </p>
+                            <p style="margin-bottom: 15px;">
+                                <strong>Descritores:</strong> Fonoaudiologia, Tecnologia, Terapia, Software, Aplicativo.
+                            </p>
+                            
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <strong>2000</strong>
+                                    <p style="font-size: 0.85rem; color: #777;">Início do período de busca</p>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <strong>2025</strong>
+                                    <p style="font-size: 0.85rem; color: #777;">Fim do período de busca</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3 class="section-title">Fluxograma de Seleção (PRISMA adaptado)</h3>
-                    <div class="flowchart">
-                        <div class="flow-step">
-                             <div class="flow-left"><i data-lucide="database"></i> Busca Inicial</div>
-                             <strong>830 artigos</strong>
-                        </div>
-                        <div class="flow-arrow"><i data-lucide="arrow-down"></i></div>
-                        <div class="flow-step excluded">
-                             <div class="flow-left"><i data-lucide="filter-x"></i> Excluídos (Título)</div>
-                             <strong>736 excluídos</strong>
-                        </div>
-                        <div class="flow-arrow"><i data-lucide="arrow-down"></i></div>
-                        <div class="flow-step">
-                             <div class="flow-left"><i data-lucide="eye"></i> Leitura de Resumo</div>
-                             <strong>94 lidos (79 excluídos)</strong>
-                        </div>
-                        <div class="flow-arrow"><i data-lucide="arrow-down"></i></div>
-                         <div class="flow-step">
-                             <div class="flow-left"><i data-lucide="file-text"></i> Leitura na Íntegra</div>
-                             <strong>15 lidos</strong>
-                        </div>
-                        <div class="flow-arrow"><i data-lucide="arrow-down"></i></div>
-                        <div class="flow-step final">
-                             <div class="flow-left"><i data-lucide="check-square"></i> Seleção Final</div>
-                             <strong>7 Artigos Analisados</strong>
+                    <div>
+                        <h3 class="section-title" style="margin-top: 0;">Fluxo de Seleção (PRISMA)</h3>
+                        <div class="flow-diagram">
+                            <div class="flow-box start">
+                                <i data-lucide="database"></i> 830 Artigos Encontrados
+                            </div>
+                            <i data-lucide="arrow-down" class="flow-arrow"></i>
+                            <div class="flow-box" style="background: #fff5f5; color: #c0392b;">
+                                736 Excluídos (Filtros/Título)
+                            </div>
+                            <i data-lucide="arrow-down" class="flow-arrow"></i>
+                            <div class="flow-box">
+                                94 Lidos (Resumo)
+                            </div>
+                            <i data-lucide="arrow-down" class="flow-arrow"></i>
+                            <div class="flow-box end">
+                                <i data-lucide="check-square"></i> 7 Artigos Selecionados
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-4"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-4"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <button class="btn-nav btn-next">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
 
+            <!-- Slide 5: Resultados -->
             <div class="slide" id="slide-5">
                 <div class="slide-header">
                     <i data-lucide="bar-chart-2"></i>
@@ -704,7 +599,7 @@
                         </div>
                     </div>
 
-                    <h3 class="section-title" id="sec-5-3" style="border-left-color: var(--danger);">5.2 e 5.3 Limitações e Desafios Futuros</h3>
+                    <h3 class="section-title" id="sec-5-3" style="border-left-color: var(--danger);">5.2 Desafios Futuros</h3>
                     <div class="content-card">
                         <ul>
                             <li><strong>Lacuna de Evidência:</strong> Ausência de robustez empírica (poucos ensaios clínicos randomizados) para sustentar eficácia de muitos programas.</li>
@@ -714,11 +609,12 @@
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-5"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-5"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <button class="btn-nav btn-next">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
-            
+
+            <!-- Slide 6: Considerações Finais -->
             <div class="slide" id="slide-6">
                 <div class="slide-header">
                     <i data-lucide="check-circle"></i>
@@ -743,42 +639,66 @@
                         <p>O futuro da práxis exige que o raciocínio clínico permaneça no centro. A tecnologia deve subordinar-se ao plano terapêutico individualizado.</p>
                     </div>
                     
-                    <div class="content-card" style="border-left: 4px solid var(--warning);">
+                    <div class="content-card" style="border-left: 4px solid var(--warning); margin-top: 20px;">
                         <div class="card-title" style="color: var(--warning);"><i data-lucide="alert-circle" style="color: var(--warning);"></i> Imperativo Metodológico</div>
                         <p>Necessidade urgente de <strong>estudos de eficácia rigorosos (RCTs)</strong> para fundamentar a prática tecnológica em evidências sólidas.</p>
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-6"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-6"> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <button class="btn-nav btn-next">Próximo <i data-lucide="arrow-right"></i></button>
                 </div>
             </div>
 
+            <!-- Slide 7: Referências -->
             <div class="slide" id="slide-7">
                 <div class="slide-header">
-                    <i data-lucide="file-text"></i>
+                    <i data-lucide="file-text" size="32" color="#2a5298"></i>
                     <h2>7. REFERÊNCIAS</h2>
                 </div>
-                <div class="slide-content">
-                    <div class="content-card">
-                        <p>Principais fontes utilizadas na revisão:</p>
-                        <ul style="font-size: 0.9rem; columns: 2; gap: 40px; margin-top: 20px;">
-                            <li>BRASIL. Lei nº 6.965/1981 (Regulamentação).</li>
-                            <li>BRASIL. Lei Geral de Proteção de Dados (LGPD), 2018.</li>
-                            <li>CFFa. Resoluções sobre Telefonoaudiologia (2020-2024).</li>
-                            <li>FERREIRA, G. Z. et al. (2018). App Fala nova, treino fácil.</li>
-                            <li>FURLONG, L. et al. (2017). Efficacy of CBST.</li>
-                            <li>LAMÔNICA, D. A. C. et al. (2017). Tratado de Linguagem.</li>
-                            <li>LAVAISSIÉRI, P.; MELO, P. E. D. (2017). App Terapia Vocal.</li>
-                            <li>MARTINS, J. S. et al. (2007). Software e DPAC.</li>
-                            <li>OMS (2016/2019). Estratégias de Saúde Digital.</li>
-                            <li>SILVA, M. P. et al. (2011). Software na Deficiência Auditiva.</li>
-                        </ul>
+
+                <div class="content-card">
+                    <h4 style="color: var(--primary); margin-bottom: 20px;">Principais fontes utilizadas na revisão:</h4>
+                    <ul style="font-size: 0.95rem; columns: 2; column-gap: 40px; color: #444; line-height: 1.8;">
+                        <li>BRASIL. Lei nº 6.965/1981 (Regulamentação).</li>
+                        <li>BRASIL. Lei Geral de Proteção de Dados (LGPD), 2018.</li>
+                        <li>CFFa. Resoluções sobre Telefonoaudiologia (2020-2024).</li>
+                        <li>FERREIRA, G. Z. et al. (2018). App Fala nova, treino fácil.</li>
+                        <li>FURLONG, L. et al. (2017). Efficacy of CBST.</li>
+                        <li>LAMÔNICA, D. A. C. et al. (2017). Tratado de Linguagem.</li>
+                        <li>LAVAISSIÉRI, P.; MELO, P. E. D. (2017). App Terapia Vocal.</li>
+                        <li>MARTINS, J. S. et al. (2007). Software e DPAC.</li>
+                        <li>OMS (2016/2019). Estratégias de Saúde Digital.</li>
+                        <li>SILVA, M. P. et al. (2011). Software na Deficiência Auditiva.</li>
+                    </ul>
+                </div>
+
+                <div class="nav-controls">
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
+                    <!-- ATUALIZADO: Habilita botão e manda para slide 8 -->
+                    <button class="btn-nav btn-next">Finalizar <i data-lucide="check"></i></button>
+                </div>
+            </div>
+
+            <!-- Slide 8: Obrigado (Adicionado do Código Original) -->
+            <div class="slide" id="slide-8">
+                <div class="thank-you-container">
+                    <i class="shape s1" data-lucide="sparkles" size="48"></i>
+                    <i class="shape s2" data-lucide="heart" size="48"></i>
+                    <i class="shape s3" data-lucide="star" size="48"></i>
+                    <i class="shape s4" data-lucide="music" size="48"></i>
+                    
+                    <div class="ty-title">Obrigada!</div>
+                    <div class="ty-subtitle">Agradeço a atenção de todos.</div>
+                    
+                    <div class="content-card" style="display: inline-block; animation: fadeInSlide 1s forwards 0.6s; opacity: 0;">
+                        <h4 style="margin-bottom: 10px; color: var(--primary);">Contato</h4>
+                        <p style="font-size: 1.1rem; font-weight: 600;">Giullia Ferreira Rodrigues</p>
+                        <p style="color: #666;">Fonoaudiologia - PUC Campinas</p>
                     </div>
                 </div>
                 <div class="nav-controls">
-                    <button class="nav-btn" id="prevBtn-7"> <i data-lucide="arrow-left"></i> Anterior </button>
-                    <button class="nav-btn" id="nextBtn-7" disabled> Próximo <i data-lucide="arrow-right"></i> </button>
+                    <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
                 </div>
             </div>
 
@@ -786,92 +706,62 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             const slides = document.querySelectorAll('.slide');
             const navItems = document.querySelectorAll('.nav-item');
-            const prevBtns = document.querySelectorAll('[id^="prevBtn-"]');
-            const nextBtns = document.querySelectorAll('[id^="nextBtn-"]');
+            const btnNext = document.querySelectorAll('.btn-next');
+            const btnPrev = document.querySelectorAll('.btn-prev');
             const mainContent = document.querySelector('.main-content');
-            
             let currentSlide = 0;
-            
-            function showSlide(index) {
-                index = Math.max(0, Math.min(index, slides.length - 1));
+
+            lucide.createIcons();
+
+            function updateSlide(index) {
+                if(index < 0 || index >= slides.length) return;
                 
-                if (slides[currentSlide]) slides[currentSlide].classList.remove('active');
-                if (slides[index]) slides[index].classList.add('active');
+                slides.forEach(s => s.classList.remove('active'));
+                slides[index].classList.add('active');
                 
                 navItems.forEach(item => {
-                    const itemIndex = parseInt(item.dataset.slideIndex);
-                    const isSubItem = item.classList.contains('nav-subitem');
-                    if (!isSubItem) {
-                         item.classList.toggle('active', itemIndex === index);
+                    const itemIndex = parseInt(item.dataset.slide);
+                    if (!isNaN(itemIndex)) {
+                        item.classList.toggle('active', itemIndex === index);
                     }
                 });
 
-                currentSlide = index;
                 mainContent.scrollTop = 0;
+                currentSlide = index;
             }
-            
-            // Navegação via Menu
+
             navItems.forEach(item => {
                 item.addEventListener('click', () => {
-                    const slideIndex = parseInt(item.dataset.slideIndex);
-                    const sectionId = item.dataset.section;
-
-                    if (currentSlide !== slideIndex) {
-                        showSlide(slideIndex);
-                    }
-
-                    if (sectionId) {
-                        setTimeout(() => {
-                            const sectionElement = document.getElementById(sectionId);
-                            if (sectionElement) {
-                                sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                sectionElement.style.transition = 'color 0.5s';
-                                const originalColor = sectionElement.style.color;
-                                sectionElement.style.color = 'var(--accent)';
-                                setTimeout(() => { sectionElement.style.color = originalColor; }, 1000);
-                            }
-                        }, 400);
+                    const slideIndex = parseInt(item.dataset.slide);
+                    if (!isNaN(slideIndex)) {
+                        updateSlide(slideIndex);
                     }
                 });
             });
-            
-            // Navegação via Botões (Clique)
-            prevBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const idx = parseInt(btn.id.split('-')[1]);
-                    showSlide(idx - 1);
-                });
-            });
-            
-            nextBtns.forEach(btn => {
-                 btn.addEventListener('click', () => {
-                     const idx = parseInt(btn.id.split('-')[1]);
-                     showSlide(idx + 1);
-                });
+
+            btnNext.forEach(btn => {
+                btn.addEventListener('click', () => updateSlide(currentSlide + 1));
             });
 
-            // --- Navegação via Teclado (Esquerda/Direita/Cima/Baixo) ---
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'ArrowLeft') {
-                    showSlide(currentSlide - 1);
-                } else if (event.key === 'ArrowRight') {
-                    showSlide(currentSlide + 1);
-                } else if (event.key === 'ArrowUp') {
-                    // Rola o conteúdo principal para cima suavemente
-                    event.preventDefault();
-                    mainContent.scrollBy({ top: -150, behavior: 'smooth' });
-                } else if (event.key === 'ArrowDown') {
-                    // Rola o conteúdo principal para baixo suavemente
-                    event.preventDefault();
-                    mainContent.scrollBy({ top: 150, behavior: 'smooth' });
+            btnPrev.forEach(btn => {
+                btn.addEventListener('click', () => updateSlide(currentSlide - 1));
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'ArrowRight') updateSlide(currentSlide + 1);
+                if(e.key === 'ArrowLeft') updateSlide(currentSlide - 1);
+                if(e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    mainContent.scrollBy({top: -150, behavior: 'smooth'});
+                }
+                if(e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    mainContent.scrollBy({top: 150, behavior: 'smooth'});
                 }
             });
-            
-            lucide.createIcons();
-            showSlide(0);
         });
     </script>
 </body>
