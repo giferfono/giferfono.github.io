@@ -8,7 +8,7 @@
     
     <style>
         :root {
-            /* Paleta de Cores do Código 2 (Mantida como Base) */
+            /* Paleta de Cores do Código 2 */
             --primary: #1e3c72;    /* Azul Profundo */
             --secondary: #2a5298;  /* Azul Vibrante */
             --accent: #00b09b;     /* Verde Tiffanys/Teal */
@@ -262,7 +262,7 @@
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
 
-        /* Timeline e Flowchart */
+        /* Timeline, Flowchart & Badges (Restaurados do Código 2) */
         .timeline { position: relative; padding-left: 30px; margin: 20px 0; }
         .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--border); border-radius: 2px; }
         .timeline-item { position: relative; margin-bottom: 25px; }
@@ -274,6 +274,9 @@
         .flow-box.end { background: var(--accent); color: white; border: none; }
         .flow-arrow { color: #bdc3c7; }
 
+        .badge-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: #eef2f7; color: var(--primary); border: 1px solid #dce4ec; }
+
         /* Slide Cover */
         .slide-cover { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 80vh; position: relative; overflow: hidden; }
         .bg-circle { position: absolute; border-radius: 50%; opacity: 0.05; z-index: 0; }
@@ -283,7 +286,7 @@
         .cover-content { position: relative; z-index: 2; }
         .cover-icon-lg { width: 100px; height: 100px; background: rgba(42, 82, 152, 0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; color: var(--primary); }
 
-        /* --- THANK YOU SLIDE STYLES (SLIDE 8) --- */
+        /* Thank You Slide */
         .thank-you-container {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100%; min-height: 70vh; text-align: center;
@@ -454,6 +457,7 @@
                     <div class="info-card">Motricidade</div>
                     <div class="info-card">Voz</div>
                     <div class="info-card">Disfagia</div>
+                    <div class="info-card">Entre Outras...</div>
                 </div>
 
                 <h3 class="section-title" id="sec-2-3">2.3 e 2.4 Tecnologias de Software</h3>
@@ -513,7 +517,7 @@
                 </div>
             </div>
 
-            <!-- Slide 4: Metodologia -->
+            <!-- Slide 4: Metodologia (Restaurado Integralmente do Código 2) -->
             <div class="slide" id="slide-4">
                 <div class="slide-header">
                     <i data-lucide="search" size="32" color="#2a5298"></i>
@@ -543,6 +547,13 @@
                                     <p style="font-size: 0.85rem; color: #777;">Fim do período de busca</p>
                                 </div>
                             </div>
+                            
+                            <strong style="display: block; margin-bottom: 8px;">Bases de Dados:</strong>
+                            <div class="badge-container">
+                                <span class="badge" style="background: #2980b9; color: white;">LILACS</span>
+                                <span class="badge" style="background: #27ae60; color: white;">SciELO</span>
+                                <span class="badge" style="background: #8e44ad; color: white;">PUBMED</span>
+                            </div>
                         </div>
                     </div>
 
@@ -559,6 +570,10 @@
                             <i data-lucide="arrow-down" class="flow-arrow"></i>
                             <div class="flow-box">
                                 94 Lidos (Resumo)
+                            </div>
+                            <i data-lucide="arrow-down" class="flow-arrow"></i>
+                            <div class="flow-box">
+                                15 Lidos na Íntegra
                             </div>
                             <i data-lucide="arrow-down" class="flow-arrow"></i>
                             <div class="flow-box end">
@@ -636,7 +651,7 @@
 
                     <div class="content-card" style="background: #f4f6f7; border: none;">
                         <div class="card-title">Integração Consciente</div>
-                        <p>O futuro da prática fonoaudiológica com o uso de tecnologia exige que o raciocínio clínico permaneça no centro. A tecnologia deve subordinar-se ao plano terapêutico individualizado.</p>
+                        <p>O futuro da prática fonoaudiológica exige que o raciocínio clínico permaneça no centro. A tecnologia deve ser integrada de forma consciente, subordinando-se sempre ao plano terapêutico individualizado.</p>
                     </div>
                     
                     <div class="content-card" style="border-left: 4px solid var(--warning); margin-top: 20px;">
@@ -658,7 +673,7 @@
                 </div>
 
                 <div class="content-card">
-                    <h4 style="color: var(--primary); margin-bottom: 20px;">Algumas referências utilizadas na pesquisa:</h4>
+                    <h4 style="color: var(--primary); margin-bottom: 20px;">Algumas das referências utilizadas:</h4>
                     <ul style="font-size: 0.95rem; columns: 2; column-gap: 40px; color: #444; line-height: 1.8;">
                         <li>BRASIL. Lei nº 6.965/1981 (Regulamentação).</li>
                         <li>BRASIL. Lei Geral de Proteção de Dados (LGPD), 2018.</li>
@@ -675,12 +690,11 @@
 
                 <div class="nav-controls">
                     <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
-                    <!-- ATUALIZADO: Habilita botão e manda para slide 8 -->
                     <button class="btn-nav btn-next">Finalizar <i data-lucide="check"></i></button>
                 </div>
             </div>
 
-            <!-- Slide 8: Obrigado (Adicionado do Código Original) -->
+            <!-- Slide 8: Obrigado -->
             <div class="slide" id="slide-8">
                 <div class="thank-you-container">
                     <i class="shape s1" data-lucide="sparkles" size="48"></i>
