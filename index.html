@@ -394,6 +394,76 @@
         }
         @keyframes fadeInSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* ESTILOS NOVOS PARA O FLUXO DE INTRODUÇÃO */
+        .intro-flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        
+        .intro-card-wrapper {
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .arrow-separator {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            padding: 5px 0;
+        }
+
+        /* ESTILOS NOVOS PARA FUNDAMENTAÇÃO (Topic Boxes) */
+        .topic-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+        .topic-box:hover {
+            transform: translateX(5px);
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .topic-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        .topic-content {
+            font-size: 0.95rem;
+            color: #555;
+            padding-left: 34px; /* Alinha com o texto do header (icon width + gap) */
+        }
+
+        /* Estilo Centralizado para Slide 2 */
+        .fund-central-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 40px; /* Espaço após a seção 2.1 */
+        }
+        
+        .fund-card-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
         /* Controles */
         .nav-controls { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); position: relative; z-index: 10; }
         .btn-nav { padding: 10px 25px; border-radius: 30px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: var(--transition); font-size: 0.95rem; }
@@ -435,7 +505,7 @@
                     <i data-lucide="book-open"></i> <span>2. Fundamentação</span>
                 </li>
                 <li class="nav-item" data-slide="3">
-                    <i data-lucide="crosshair"></i> <span>3. Objetivos</span>
+                    <i data-lucide="crosshair"></i> <span>3. Objetivo</span>
                 </li>
                 <li class="nav-item" data-slide="4">
                     <i data-lucide="search"></i> <span>4. Metodologia</span>
@@ -495,26 +565,55 @@
                     <h2>1. INTRODUÇÃO</h2>
                 </div>
                 <div class="slide-content">
-                    <div class="content-card">
-                        <div class="card-title"><i data-lucide="activity"></i> Contextualização</div>
-                        <p>A Fonoaudiologia estuda a comunicação humana e suas alterações. A integração de recursos tecnológicos é um fenômeno em expansão, visando otimizar capacidades funcionais e qualidade de vida.</p>
+                    
+                    <div class="intro-flow-container">
+                        
+                        <div class="intro-card-wrapper">
+                            <div class="content-card" style="border-left: 6px solid var(--primary); background: #f4f8fb; padding: 30px;">
+                                <div class="card-title" style="font-size: 1.3rem; margin-bottom: 15px;">
+                                    <i data-lucide="activity"></i> Contextualização
+                                </div>
+                                <p style="font-size: 1.1rem; line-height: 1.6;">
+                                    A Fonoaudiologia estuda a comunicação humana e suas alterações. A integração de recursos tecnológicos é um fenômeno em expansão, visando otimizar capacidades funcionais e qualidade de vida.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="arrow-separator">
+                            <i data-lucide="arrow-down" size="28" color="#2a5298"></i>
+                        </div>
+
+                        <div class="intro-card-wrapper">
+                            <div class="info-card" style="border-top-color: var(--warning);">
+                                <h4><i data-lucide="alert-triangle"></i> Impacto da COVID-19</h4>
+                                <p>A pandemia acelerou a Telefonoaudiologia, consolidando práticas híbridas e superando barreiras geográficas.</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow-separator">
+                            <i data-lucide="arrow-down" size="28" color="#f1c40f"></i>
+                        </div>
+
+                        <div class="intro-card-wrapper">
+                            <div class="info-card" style="border-top-color: var(--success);">
+                                <h4><i data-lucide="smartphone"></i> Expansão Digital</h4>
+                                <p>Incorporação de softwares para avaliação e terapia, aumentando o engajamento e permitindo coleta de dados quantitativos para a <strong>Prática Baseada em Evidências</strong>.</p>
+                            </div>
+                        </div>
+
+                        <div class="arrow-separator">
+                            <i data-lucide="arrow-down" size="28" color="#e74c3c"></i>
+                        </div>
+                        
+                        <div class="intro-card-wrapper">
+                            <div class="content-card" style="border-left: 4px solid var(--danger);">
+                                 <div class="card-title" style="color: var(--danger);"><i data-lucide="help-circle" style="color: var(--danger);"></i> O Problema</div>
+                                <p>Apesar do potencial, persiste uma <strong>carência de estudos sistematizados</strong> sobre a efetiva prevalência, padrões de uso e validação clínica dessas inovações.</p>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="grid-container">
-                        <div class="info-card">
-                            <h4><i data-lucide="smartphone"></i> Expansão Digital</h4>
-                            <p>Incorporação de softwares para avaliação e terapia, aumentando o engajamento e permitindo coleta de dados quantitativos para a <strong>Prática Baseada em Evidências</strong>.</p>
-                        </div>
-                        <div class="info-card" style="border-top-color: var(--warning);">
-                            <h4><i data-lucide="alert-triangle"></i> Impacto da COVID-19</h4>
-                            <p>A pandemia acelerou a Telefonoaudiologia, consolidando práticas híbridas e superando barreiras geográficas.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="content-card" style="border-left: 4px solid var(--danger);">
-                         <div class="card-title" style="color: var(--danger);"><i data-lucide="help-circle" style="color: var(--danger);"></i> O Problema</div>
-                        <p>Apesar do potencial, persiste uma <strong>carência de estudos sistematizados</strong> sobre a efetiva prevalência, padrões de uso e validação clínica dessas inovações.</p>
-                    </div>
                 </div>
                 <div class="nav-controls">
                     <button class="btn-nav btn-prev"><i data-lucide="arrow-left"></i> Anterior</button>
@@ -530,8 +629,7 @@
 
                 <h3 class="section-title">2.1 Fonoaudiologia e Áreas</h3>
                 <p style="margin-bottom: 20px; color: #666;">Profissão regulamentada pela <strong>Lei nº 6.965/1981</strong>. Atuação preventiva, diagnóstica e terapêutica nas áreas de:</p>
-
-                <div class="grid-3" style="margin-bottom: 30px;">
+                <div class="grid-3">
                     <div class="info-card">Audiologia</div>
                     <div class="info-card">Linguagem</div>
                     <div class="info-card">Motricidade</div>
@@ -540,37 +638,70 @@
                     <div class="info-card"> Entre outras</div>
                 </div>
 
-                <h3 class="section-title" id="sec-2-3">2.3 e 2.4 Tecnologias de Software</h3>
-                <div class="grid-2">
-                    <div class="content-card">
-                        <div class="card-icon"><i data-lucide="video"></i></div>
-                        <h4 class="subsection-title">Telefonoaudiologia</h4>
-                        <ul>
-                            <li><strong>Síncrona:</strong> Tempo real (videoconferência).</li>
-                            <li><strong>Assíncrona:</strong> Envio de dados/exames para análise posterior.</li>
-                            <li>Regulamentada pelo CFFa (Resolução Nº 580/2020 e Nº 615/2021).</li>
-                        </ul>
+                <div class="fund-central-container">
+                    
+                    <h3 class="section-title" style="justify-content: center;">2.3 e 2.4 Tecnologias de Software</h3>
+                    
+                    <div class="fund-card-wrapper">
+                        <div class="content-card">
+                            <div class="card-icon"><i data-lucide="video"></i></div>
+                            <h4 class="subsection-title">Telefonoaudiologia</h4>
+                            <ul>
+                                <li><strong>Síncrona:</strong> Tempo real (videoconferência).</li>
+                                <li><strong>Assíncrona:</strong> Envio de dados/exames para análise posterior.</li>
+                                <li>Regulamentada pelo CFFa (Resolução Nº 580/2020 e Nº 615/2021).</li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div class="content-card">
-                        <div class="card-icon"><i data-lucide="play-circle"></i></div>
-                        <h4 class="subsection-title">Intervenção e Avaliação</h4>
-                        <ul>
-                            <li>Análise acústica (Voz) e Audiômetros digitais.</li>
-                            <li>Softwares: <em>GraphoGame</em> (Linguagem), <em>Afinando o Cérebro</em> (Auditivo).</li>
-                            <li>Gamificação (Wordwall, GameFono).</li>
-                        </ul>
-                    </div>
-                </div>
+                    <div class="fund-card-wrapper">
+                        <div class="content-card">
+                            <div class="card-icon"><i data-lucide="play-circle"></i></div>
+                            <h4 class="subsection-title">Intervenção e Avaliação</h4>
+                            
+                            <div style="margin-top: 20px;">
+                                <div class="topic-box" style="border-left: 4px solid var(--secondary);">
+                                    <div class="topic-header">
+                                        <i data-lucide="file-search" size="20" color="var(--secondary)"></i> Softwares para Avaliação
+                                    </div>
+                                    <div class="topic-content">
+                                        Análise acústica (Voz) e Audiômetros digitais. Ferramentas que auxiliam no diagnóstico preciso.
+                                    </div>
+                                </div>
 
-                <h3 class="section-title" id="sec-2-4" style="border-left-color: var(--danger);">2.5 Desafios e Ética</h3>
-                <div class="content-card">
-                     <div class="card-title"><i data-lucide="shield-alert"></i> Segurança e Acesso</div>
-                     <ul>
-                         <li><strong>LGPD:</strong> Dados de saúde são sensíveis; exigem consentimento e segurança robusta.</li>
-                         <li><strong>Exclusão Digital:</strong> Disparidade de acesso fere o princípio da justiça.</li>
-                         <li><strong>Sigilo Profissional:</strong> Vulnerabilidade na transmissão de dados.</li>
-                     </ul>
+                                <div class="topic-box" style="border-left: 4px solid var(--accent);">
+                                    <div class="topic-header">
+                                        <i data-lucide="activity" size="20" color="var(--accent)"></i> Softwares para Intervenção
+                                    </div>
+                                    <div class="topic-content">
+                                        Softwares como <em>GraphoGame</em> (Linguagem) e <em>Afinando o Cérebro</em> (Processamento Auditivo).
+                                    </div>
+                                </div>
+
+                                <div class="topic-box" style="border-left: 4px solid #8e44ad;">
+                                    <div class="topic-header">
+                                        <i data-lucide="gamepad-2" size="20" color="#8e44ad"></i> Gamificação
+                                    </div>
+                                    <div class="topic-content">
+                                        Uso de elementos de jogos (Wordwall, GameFono) para aumentar o engajamento e adesão ao tratamento.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title" style="justify-content: center; border-left: none;">2.5 Desafios e Ética</h3>
+                    <div class="fund-card-wrapper">
+                        <div class="content-card" style="border-left: 4px solid var(--danger);">
+                             <div class="card-title"><i data-lucide="shield-alert" color="var(--danger)"></i> Segurança e Acesso</div>
+                             <ul>
+                                 <li><strong>LGPD:</strong> Dados de saúde são sensíveis; exigem consentimento e segurança robusta.</li>
+                                 <li><strong>Exclusão Digital:</strong> Disparidade de acesso fere o princípio da justiça.</li>
+                                 <li><strong>Sigilo Profissional:</strong> Vulnerabilidade na transmissão de dados.</li>
+                             </ul>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="nav-controls">
@@ -582,11 +713,11 @@
             <div class="slide" id="slide-3">
                 <div class="slide-header">
                     <i data-lucide="crosshair"></i>
-                    <h2>3. OBJETIVOS</h2>
+                    <h2>3. OBJETIVO</h2>
                 </div>
-                <div class="slide-content">
-                    <div class="content-card" style="border-left: 5px solid var(--secondary); background: #f8fbff;">
-                        <div class="card-title"><i data-lucide="target"></i> Objetivo Geral</div>
+                <div class="slide-content" style="display: flex; flex-direction: column; justify-content: center; min-height: 60vh;">
+                    <div class="content-card" style="border-left: 5px solid var(--secondary); background: #f8fbff; width: 100%; max-width: 700px; margin: 0 auto; text-align: center;">
+                        <div class="card-title" style="justify-content: center;"><i data-lucide="target"></i> Objetivo Geral</div>
                         <p style="font-size: 1.1rem; font-weight: 500;">Analisar o contexto e a incidência de utilização de tecnologias de software na prática da terapia fonoaudiológica.</p>
                     </div>
                 </div>
@@ -865,4 +996,3 @@
     </script>
 </body>
 </html>
-                     
