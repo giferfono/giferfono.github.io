@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sistema de Avaliação Audiológica</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{screens:{'print':{'raw':'print'}}}}}</script>
+<script type="importmap">{"imports":{"react":"https://esm.sh/react@18.2.0","react-dom/client":"https://esm.sh/react-dom@18.2.0/client","lucide-react":"https://esm.sh/lucide-react@0.263.1"}}</script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+@media print{@page{margin:0.5cm;size:A4}body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print{display:none!important}.print-only{display:block!important}input,textarea{border:none!important;resize:none;background:0 0;padding:0}::-webkit-input-placeholder{color:transparent}svg{break-inside:avoid}.page-break-inside-avoid{break-inside:avoid}}.print-only{display:none}.modal-overlay{background-color:rgba(0,0,0,.5)}
+body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}input,textarea{user-select:text}
+</style>
+<script>
+document.addEventListener('contextmenu',e=>e.preventDefault());document.onkeydown=function(e){if(123==e.keyCode||e.ctrlKey&&e.shiftKey&&73==e.keyCode||e.ctrlKey&&e.shiftKey&&67==e.keyCode||e.ctrlKey&&e.shiftKey&&74==e.keyCode||e.ctrlKey&&85==e.keyCode)return!1};
+</script>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+import React,{useState,useEffect}from'react';import{createRoot}from'react-dom/client';import{Ear,RotateCcw,Activity,Bone,Mic2,Waves,FileText,Printer,AlertTriangle,User,Calendar,Settings,Clipboard,Calculator,X,Stethoscope,BarChart3,CheckSquare,Square}from'lucide-react';
+
+const AudiogramApp = () => {
+  const [patientData, setPatientData] = useState({name:'', dob:'', age:'', examDate: new Date().toISOString().split('T')[0]});
+  const [equipmentData, setEquipmentData] = useState({audiometerModel:'', audiometerCalib:'', immitanceModel:'', immitanceCalib:''});
+  const [professionalData, setProfessionalData] = useState({name:'', crfa:''});
+  const [clinicalNotes, setClinicalNotes] = useState({laudo:'', observations:''});
+  const [printConfig, setPrintConfig] = useState({tonal:true, logo:true, immitance:true, report:true});
+  const [showPrintOptions, setShowPrintOptions] = useState(false);
+  
+  const frequencies = [125, 250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
+  const boneFrequencies = [500, 1000, 2000, 3000, 4000];
+  const createEmptyFreqData = () => frequencies.reduce((acc, freq) => ({...acc, [freq]: null}), {});
+  
+  const [rightAir, setRightAir] = useState(createEmptyFreqData());
+  const [leftAir, setLeftAir] = useState(createEmptyFreqData());
+  const [rightBone, setRightBone] = useState(createEmptyFreqData());
+  const [leftBone, setLeftBone] = useState(createEmptyFreqData());
+  
+  const [logoData, setLogoData] = useState({
+    right: {srt:'', sdt:'', ipfrMono:'', ipfrDi:''},
+    left: {srt:'', sdt:'', ipfrMono:'', ipfrDi:''}
+  });
+  
+  const [immitanceData, setImmitanceData] = useState({
+    right: {pressure:'', compliance:'', neutral:'', plus200:''},
+    left: {pressure:'', compliance:'', neutral:'', plus200:''},
+    reflexes: {
+      right: {contra: {500:'', 1000:'', 2000:'', 4000:''}, ipsi: {500:'', 1000:'', 2000:'', 4000:''}, threshold: {500:'', 1000:'', 2000:'', 4000:''}},
+      left: {contra: {500:'', 1000:'', 2000:'', 4000:''}, ipsi: {500:'', 1000:'', 2000:'', 4000:''}, threshold: {500:'', 1000:'', 2000:'', 4000:''}}
+    }
+  });
+  
+  const [activeEar, setActiveEar] = useState('right');
+  const [stimulusType, setStimulusType] = useState('air');
+  const [activeTab, setActiveTab] = useState('tonal');
+  const [showMaskingModal, setShowMaskingModal] = useState(false);
+  
+  const parseNum = (val) => {
+    if (!val) return null;
+    const num = parseFloat(val.toString().replace(',', '.'));
+    return isNaN(num) ? null : num;
+  };
+  
+  useEffect(() => {
+    if (patientData.dob) {
+      const birthDate = new Date(patientData.dob);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+      setPatientData(prev => ({...prev, age: age}));
+    }
+  }, [patientData.dob]);
+  
+  const width = 350; const height = 350;
+  const padding = {top: 40, right: 20, bottom: 40, left: 40};
+  const graphWidth = width - padding.left - padding.right;
+  const graphHeight = height - padding.top - padding.bottom;
+  const minDb = -10; const maxDb = 120;
+  
+  const getX = (freqIndex) => padding.left + (freqIndex * (graphWidth / (frequencies.length - 1)));
+  const getY = (db) => padding.top + ((db - minDb) / (maxDb - minDb)) * graphHeight;
+  const getDbFromY = (y) => {
+    const relativeY = y - padding.top;
+    const db = (relativeY / graphHeight) * (maxDb - minDb) + minDb;
+    return Math.round(db / 5) * 5;
+  };
+  
+  const calculateWHO2021_Average = (earData) => {
+    const sum = [500, 1000, 2000, 4000].reduce((acc, f) => acc + (earData[f] || 0), 0);
+    const count = [500, 1000, 2000, 4000].filter(f => earData[f] !== null).length;
+    if (count < 4) return null;
+    return sum / 4;
+  };
+  
+  const getWHO2021_Classification = (avg) => {
+    if (avg === null) return "Incompleto";
+    if (avg < 20) return "Audição Normal";
+    if (avg < 35) return "Perda Leve";
+    if (avg < 50) return "Perda Moderada";
+    if (avg < 65) return "Mod. Severa";
+    if (avg < 80) return "Perda Severa";
+    if (avg < 95) return "Perda Profunda";
+    return "Perda Completa/Surdez";
+  };
+  
+  const updateTonalPoint = (ear, type, freq, value) => {
+    let numValue = value === '' ? null : Number(value);
+    if (numValue !== null) {
+      if (numValue > 120) numValue = 120;
+      if (numValue < -10) numValue = -10;
+    }
+    const setters = {'right-air': setRightAir, 'left-air': setLeftAir, 'right-bone': setRightBone, 'left-bone': setLeftBone};
+    const sources = {'right-air': rightAir, 'left-air': leftAir, 'right-bone': rightBone, 'left-bone': leftBone};
+    const key = `${ear}-${type}`;
+    setters[key]({...sources[key], [freq]: numValue});
+  };
+  
+  const handleGraphClick = (e, targetEar) => {
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = width / rect.width;
+    const scaleY = height / rect.height;
+    const actualX = (e.clientX - rect.left) * scaleX;
+    const actualY = (e.clientY - rect.top) * scaleY;
+    let closestFreqIndex = 0; let minDiff = Infinity;
+    frequencies.forEach((freq, index) => {
+      const diff = Math.abs(getX(index) - actualX);
+      if (diff < minDiff) { minDiff = diff; closestFreqIndex = index; }
+    });
+    if (minDiff > 50) return;
+    if (stimulusType === 'bone' && !boneFrequencies.includes(frequencies[closestFreqIndex])) return;
+    let db = getDbFromY(actualY);
+    if (db < minDb) db = minDb; if (db > maxDb) db = maxDb;
+    updateTonalPoint(targetEar, stimulusType, frequencies[closestFreqIndex], db);
+  };
+  
+  const resetAll = () => {
+    if (confirm('Limpar todos os dados clínicos?')) {
+      setRightAir(createEmptyFreqData()); setLeftAir(createEmptyFreqData());
+      setRightBone(createEmptyFreqData()); setLeftBone(createEmptyFreqData());
+      setImmitanceData({
+        right: {pressure:'', compliance:'', neutral:'', plus200:''},
+        left: {pressure:'', compliance:'', neutral:'', plus200:''},
+        reflexes: {
+          right: {contra:{500:'', 1000:'', 2000:'', 4000:''}, ipsi:{500:'', 1000:'', 2000:'', 4000:''}, threshold:{500:'', 1000:'', 2000:'', 4000:''}},
+          left: {contra:{500:'', 1000:'', 2000:'', 4000:''}, ipsi:{500:'', 1000:'', 2000:'', 4000:''}, threshold:{500:'', 1000:'', 2000:'', 4000:''}}
+        }
+      });
+      setLogoData({right:{srt:'', sdt:'', ipfrMono:'', ipfrDi:''}, left:{srt:'', sdt:'', ipfrMono:'', ipfrDi:''}});
+    }
+  };
+
+  const PrintOptionsModal = ({onClose}) => (
+    <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
+        <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Printer className="w-5 h-5"/> Opções de Impressão</h3>
+        <div className="space-y-3 mb-6">
+          <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+            <input type="checkbox" checked={printConfig.tonal} onChange={e => setPrintConfig({...printConfig, tonal: e.target.checked})} className="w-5 h-5 accent-indigo-600"/>
+            <span className="text-sm font-medium">Audiometria Tonal</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+            <input type="checkbox" checked={printConfig.logo} onChange={e => setPrintConfig({...printConfig, logo: e.target.checked})} className="w-5 h-5 accent-indigo-600"/>
+            <span className="text-sm font-medium">Logoaudiometria</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+            <input type="checkbox" checked={printConfig.immitance} onChange={e => setPrintConfig({...printConfig, immitance: e.target.checked})} className="w-5 h-5 accent-indigo-600"/>
+            <span className="text-sm font-medium">Imitanciometria</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+            <input type="checkbox" checked={printConfig.report} onChange={e => setPrintConfig({...printConfig, report: e.target.checked})} className="w-5 h-5 accent-indigo-600"/>
+            <span className="text-sm font-medium">Laudo e Observações</span>
+          </label>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={onClose} className="flex-1 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded">Cancelar</button>
+          <button onClick={() => { onClose(); setTimeout(() => window.print(), 100); }} className="flex-1 py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded font-bold">Imprimir</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const AdvancedCalculator = ({onClose}) => {
+    const [modalTab, setModalTab] = useState('masking');
+    
+    const getMaskingInfo = (freq, ear, type) => {
+      const teAir = ear === 'right' ? rightAir[freq] : leftAir[freq];
+      const teBone = ear === 'right' ? rightBone[freq] : leftBone[freq];
+      const nteAir = ear === 'right' ? leftAir[freq] : rightAir[freq];
+      const nteBone = (ear === 'right' ? leftBone[freq] : rightBone[freq]) || nteAir || 0;
+      const oe = {250: 15, 500: 15, 1000: 10}[freq] || 0;
+      if (teAir === null) return null;
+      if (type === 'bone') {
+        if (teBone !== null && (teAir - teBone) > 10) return {needed: true, value: (nteAir || 0) + oe + 10, reason: `Gap A-O > 10dB`};
+      }
+      if (type === 'air') {
+        if ((teAir - (nteBone || 0)) >= 40) return {needed: true, value: (nteAir || 0) + 10, reason: `Atenuação ≥ 40dB`};
+      }
+      return {needed: false};
+    };
+    
+    const getSpeechMasking = (ear, type) => {
+      const valStr = type === 'SRT' ? logoData[ear].srt : logoData[ear].sdt;
+      const val = parseNum(valStr);
+      if (val === null) return null;
+      const nteEar = ear === 'right' ? 'left' : 'right';
+      const nteBoneData = nteEar === 'right' ? rightBone : leftBone;
+      const nteAirData = nteEar === 'right' ? rightAir : leftAir;
+      let bestBone = 120;
+      let hasBone = false;
+      [500, 1000, 2000, 4000].forEach(f => {
+        if (nteBoneData[f] !== null && nteBoneData[f] < bestBone) { bestBone = nteBoneData[f]; hasBone = true; }
+      });
+      if (!hasBone) {
+        const pta = calculateWHO2021_Average(nteAirData);
+        bestBone = pta !== null ? pta : 0;
+      }
+      if ((val - 40) >= bestBone) {
+        const nteSrt = parseNum(logoData[nteEar].srt);
+        const ntePta = calculateWHO2021_Average(nteAirData) || 0;
+        const maskVal = (nteSrt !== null ? nteSrt : ntePta) + 10;
+        return {needed: true, value: maskVal, reason: 'IA ≥ 40dB'};
+      }
+      return {needed: false};
+    };
+    
+    const getDiagnosis = (ear) => {
+      const airData = ear === 'right' ? rightAir : leftAir;
+      const boneData = ear === 'right' ? rightBone : leftBone;
+      const pta = calculateWHO2021_Average(airData);
+      if (pta === null) return {degree: 'Incompleto', type: 'Incompleto'};
+      const degree = getWHO2021_Classification(pta);
+      let type = 'Normal';
+      if (degree !== 'Audição Normal') {
+        let gapSum = 0, gapCount = 0, boneAbnormalCount = 0;
+        [500, 1000, 2000, 4000].forEach(f => {
+          if (airData[f] !== null && boneData[f] !== null) {
+            const gap = airData[f] - boneData[f];
+            gapSum += gap; gapCount++;
+            if (boneData[f] > 25) boneAbnormalCount++;
+          }
+        });
+        const avgGap = gapCount > 0 ? gapSum / gapCount : 0;
+        if (avgGap <= 10) { type = 'Neurossensorial'; } else {
+          if (boneAbnormalCount === 0) { type = 'Condutiva'; } else { type = 'Mista'; }
+        }
+      }
+      return {degree, type};
+    };
+    
+    const diagR = getDiagnosis('right');
+    const diagL = getDiagnosis('left');
+    
+    return (
+      <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+          <div className="p-4 border-b flex justify-between items-center bg-white rounded-t-xl">
+            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Calculator className="w-5 h-5"/> Análise Audiológica Avançada</h2>
+            <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-full"><X className="w-6 h-6"/></button>
+          </div>
+          <div className="flex border-b border-slate-200">
+            <button onClick={() => setModalTab('masking')} className={`flex-1 py-3 text-sm font-bold ${modalTab === 'masking' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500 hover:bg-slate-50'}`}>Calculadora de Mascaramento</button>
+            <button onClick={() => setModalTab('diagnosis')} className={`flex-1 py-3 text-sm font-bold ${modalTab === 'diagnosis' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-500 hover:bg-slate-50'}`}>Diagnóstico (Tipo e Grau)</button>
+          </div>
+          <div className="p-6 overflow-y-auto">
+            {modalTab === 'masking' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {['right', 'left'].map(ear => (
+                  <div key={ear} className="space-y-4">
+                    <h3 className={`text-lg font-bold uppercase border-b-2 pb-1 ${ear === 'right' ? 'text-red-600 border-red-100' : 'text-blue-600 border-blue-100'}`}>Orelha {ear === 'right' ? 'Direita' : 'Esquerda'} (TE)</h3>
+                    <div>
+                      <h4 className="font-semibold text-sm text-slate-500 mb-2">Tonal (VA / VO)</h4>
+                      <table className="w-full text-sm border">
+                        <thead className="bg-slate-50"><tr><th className="p-1 border">Hz</th><th className="p-1 border">Via</th><th className="p-1 border">Limiar</th><th className="p-1 border">Máscara (NTE)</th></tr></thead>
+                        <tbody>
+                          {frequencies.map(f => {
+                            const infoAir = getMaskingInfo(f, ear, 'air');
+                            const infoBone = getMaskingInfo(f, ear, 'bone');
+                            const rows = [];
+                            if (infoAir && infoAir.needed) rows.push(<tr key={`${f}-air`} className="bg-amber-50"><td className="p-1 border text-center font-bold">{f}</td><td className="p-1 border text-center">VA</td><td className="p-1 border text-center">{(ear === 'right' ? rightAir[f] : leftAir[f])}</td><td className="p-1 border text-center font-bold text-amber-700">{infoAir.value} dB</td></tr>);
+                            if (infoBone && infoBone.needed) rows.push(<tr key={`${f}-bone`} className="bg-orange-50"><td className="p-1 border text-center font-bold">{f}</td><td className="p-1 border text-center">VO</td><td className="p-1 border text-center">{(ear === 'right' ? rightBone[f] : leftBone[f])}</td><td className="p-1 border text-center font-bold text-amber-700">{infoBone.value} dB</td></tr>);
+                            return rows;
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-slate-500 mb-2">Logoaudiometria</h4>
+                      <table className="w-full text-sm border">
+                        <thead className="bg-slate-50"><tr><th className="p-1 border">Teste</th><th className="p-1 border">Nível (dB)</th><th className="p-1 border">Máscara (NTE)</th></tr></thead>
+                        <tbody>
+                          {['SRT', 'SDT'].map(test => {
+                            const info = getSpeechMasking(ear, test);
+                            if (!info) return null;
+                            return (<tr key={test} className={info.needed ? "bg-amber-50" : ""}><td className="p-1 border text-center font-bold">{test}</td><td className="p-1 border text-center">{test === 'SRT' ? logoData[ear].srt : logoData[ear].sdt}</td><td className="p-1 border text-center font-bold text-amber-700">{info.needed ? `${info.value} dB` : '-'}</td></tr>);
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {modalTab === 'diagnosis' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="border border-red-200 rounded-xl p-6 bg-red-50">
+                    <h3 className="text-xl font-bold text-red-700 mb-4 flex items-center gap-2"><Ear className="w-6 h-6"/> Orelha Direita</h3>
+                    <div className="space-y-3">
+                      <div><span className="text-sm text-slate-500 block">Média Quadritonal (OMS 2021)</span><span className="text-2xl font-bold text-slate-800">{calculateWHO2021_Average(rightAir)?.toFixed(1) || '--'} dB</span></div>
+                      <div><span className="text-sm text-slate-500 block">Grau da Perda</span><span className="text-lg font-semibold text-red-800">{diagR.degree}</span></div>
+                      <div><span className="text-sm text-slate-500 block">Tipo da Perda</span><span className="text-lg font-semibold text-red-800">{diagR.type}</span></div>
+                    </div>
+                  </div>
+                  <div className="border border-blue-200 rounded-xl p-6 bg-blue-50">
+                    <h3 className="text-xl font-bold text-blue-700 mb-4 flex items-center gap-2"><Ear className="w-6 h-6 scale-x-[-1]"/> Orelha Esquerda</h3>
+                    <div className="space-y-3">
+                      <div><span className="text-sm text-slate-500 block">Média Quadritonal (OMS 2021)</span><span className="text-2xl font-bold text-slate-800">{calculateWHO2021_Average(leftAir)?.toFixed(1) || '--'} dB</span></div>
+                      <div><span className="text-sm text-slate-500 block">Grau da Perda</span><span className="text-lg font-semibold text-blue-800">{diagL.degree}</span></div>
+                      <div><span className="text-sm text-slate-500 block">Tipo da Perda</span><span className="text-lg font-semibold text-blue-800">{diagL.type}</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const TympanogramGraph = ({dataR, dataL}) => {
+    const w = 300, h = 180;
+    const pX = 35, pY = 20;
+    const mapX = (d) => pX + ((d - (-400)) / (600)) * (w - 2 * pX);
+    const mapY = (m) => (h - pY) - (m / 1.5) * (h - 2 * pY);
+    const genPath = (peakPressure, peakVol, vol200) => {
+      const p = parseNum(peakPressure);
+      const vPeak = parseNum(peakVol);
+      const v200 = parseNum(vol200);
+      if (p === null || vPeak === null || v200 === null) return "";
+      const height = Math.max(0, vPeak - v200);
+      const base = v200;
+      let path = "";
+      for (let x = -400; x <= 200; x += 10) {
+        const yVal = base + height * Math.exp(-Math.pow(x - p, 2) / (2 * Math.pow(60, 2)));
+        const drawY = Math.min(Math.max(yVal, 0), 1.5);
+        path += (x === -400 ? "M" : "L") + ` ${mapX(x)} ${mapY(drawY)}`;
+      }
+      return path;
+    };
+    return (
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full bg-white border border-slate-200 rounded">
+        <rect x={pX} y={pY} width={w - 2 * pX} height={h - 2 * pY} fill="#fcfcfc" />
+        {[-400, -200, 0, 200].map(v => (<g key={v}><line x1={mapX(v)} y1={pY} x2={mapX(v)} y2={h - pY} stroke="#e2e8f0" strokeDasharray="2 2" /><text x={mapX(v)} y={h - 5} textAnchor="middle" fontSize="9" fill="#94a3b8">{v}</text></g>))}
+        {[0.5, 1.0, 1.4].map(v => (<g key={v}><line x1={pX} y1={mapY(v)} x2={w - pX} y2={mapY(v)} stroke="#e2e8f0" strokeDasharray="2 2" /><text x={pX - 5} y={mapY(v) + 3} textAnchor="end" fontSize="9" fill="#94a3b8">{v}</text></g>))}
+        <path d={genPath(dataR.pressure, dataR.compliance, dataR.plus200)} fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.8" />
+        <path d={genPath(dataL.pressure, dataL.compliance, dataL.plus200)} fill="none" stroke="#2563eb" strokeWidth="2" opacity="0.8" />
+        <text x={w / 2} y={12} textAnchor="middle" fontSize="10" fill="#64748b">Pressão (daPa)</text>
+        <text transform={`rotate(-90 ${12} ${h / 2})`} x={12} y={h / 2} textAnchor="middle" fontSize="10" fill="#64748b">Volume (ml)</text>
+      </svg>
+    );
+  };
+
+  const SingleAudiogramGraph = ({ear, isPrint = false}) => {
+    const isRight = ear === 'right';
+    const boneData = isRight ? rightBone : leftBone;
+    const airData = isRight ? rightAir : leftAir;
+    const color = isRight ? '#ef4444' : '#2563eb';
+    const renderL = (d, c, dash) => {
+      let p = ""; let f = true;
+      frequencies.forEach((freq, i) => {
+        if (d[freq] !== null) {
+          const x = getX(i), y = getY(d[freq]);
+          p += (f ? `M ${x} ${y}` : ` L ${x} ${y}`); f = false;
+        } else f = true;
+      });
+      return <path d={p} fill="none" stroke={c} strokeWidth={isPrint ? "2" : "2"} strokeDasharray={dash ? "4 4" : "0"} />;
+    };
+    const renderS = (d, t) => frequencies.map((freq, i) => {
+      if (d[freq] === null) return null;
+      const x = getX(i), y = getY(d[freq]);
+      if (t === 'air') return isRight ? <circle key={i} cx={x} cy={y} r={4} fill="white" stroke={color} strokeWidth="2" /> : <g key={i}><line x1={x - 3} y1={y - 3} x2={x + 3} y2={y + 3} stroke={color} strokeWidth="2" /><line x1={x + 3} y1={y - 3} x2={x - 3} y2={y + 3} stroke={color} strokeWidth="2" /></g>;
+      return isRight ? <path key={i} d={`M ${x + 3} ${y - 5} L ${x - 2} ${y} L ${x + 3} ${y + 5}`} fill="none" stroke={color} strokeWidth="2" /> : <path key={i} d={`M ${x - 3} ${y - 5} L ${x + 2} ${y} L ${x - 3} ${y + 5}`} fill="none" stroke={color} strokeWidth="2" />;
+    });
+    return (
+      <svg viewBox={`0 0 ${width} ${height}`} className={`w-full h-full bg-white ${!isPrint ? 'cursor-crosshair' : ''}`} onClick={!isPrint ? (e) => handleGraphClick(e, ear) : undefined}>
+        <rect x={padding.left} y={padding.top} width={graphWidth} height={graphHeight} fill={isPrint ? "white" : "#f8fafc"} />
+        {Array.from({length: 14}).map((_, i) => {
+          const y = getY(minDb + i * 10);
+          return <g key={i}><line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke={i % 2 === 1 ? "#e2e8f0" : "#cbd5e1"} strokeWidth="1" /><text x={padding.left - 10} y={y + 4} textAnchor="end" fontSize="10" fill="#64748b">{minDb + i * 10}</text></g>;
+        })}
+        {frequencies.map((f, i) => <g key={i}><line x1={getX(i)} y1={padding.top} x2={getX(i)} y2={height - padding.bottom} stroke="#e2e8f0" /><text x={getX(i)} y={padding.top - 15} textAnchor="middle" fontSize="11" fontWeight="bold" fill="#475569">{f >= 1000 ? f / 1000 + 'k' : f}</text></g>)}
+        <text x={width / 2} y={height - 5} textAnchor="middle" fontSize="10" fill="#94a3b8" fontWeight="bold">Frequência (Hz)</text>
+        <text transform={`rotate(-90 ${15} ${height / 2})`} x={15} y={height / 2} textAnchor="middle" fontSize="10" fill="#94a3b8" fontWeight="bold">Intensidade (dB HL)</text>
+        <text x={width / 2} y={15} textAnchor="middle" fontSize="12" fill={color} fontWeight="bold" style={{textTransform: 'uppercase'}}>Orelha {isRight ? 'Direita' : 'Esquerda'}</text>
+        {renderL(boneData, color, true)}
+        {renderL(airData, color, false)}
+        {renderS(boneData, 'bone')}
+        {renderS(airData, 'air')}
+      </svg>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 p-4 md:p-6 font-sans text-slate-800 print:bg-white print:p-0">
+      {showMaskingModal && <AdvancedCalculator onClose={() => setShowMaskingModal(false)} />}
+      {showPrintOptions && <PrintOptionsModal onClose={() => setShowPrintOptions(false)} />}
+      <div className="max-w-6xl mx-auto space-y-6 no-print">
+        <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+          <h1 className="text-xl font-bold text-indigo-700 flex items-center gap-2"><Activity/> Prontuário Audiológico</h1>
+          <div className="flex gap-2">
+            <button onClick={() => setShowMaskingModal(true)} className="px-4 py-2 text-sm text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg flex items-center gap-2 border border-indigo-200"><Calculator size={16}/> Calculadora</button>
+            <button onClick={resetAll} className="px-4 py-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 rounded-lg flex items-center gap-2 border border-red-200"><RotateCcw size={16}/> Limpar</button>
+            <button onClick={() => setShowPrintOptions(true)} className="px-4 py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-2 shadow-sm"><Printer size={16}/> Imprimir</button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2"><User size={16}/> Identificação do Paciente</h3>
+            <div className="space-y-3">
+              <div><label className="text-xs text-slate-500 font-semibold">Nome Completo</label><input type="text" className="w-full p-2 border border-slate-300 rounded text-sm" value={patientData.name} onChange={e => setPatientData({...patientData, name: e.target.value})} /></div>
+              <div className="flex gap-4">
+                <div className="flex-1"><label className="text-xs text-slate-500 font-semibold">Data de Nascimento</label><input type="date" className="w-full p-2 border border-slate-300 rounded text-sm" value={patientData.dob} onChange={e => setPatientData({...patientData, dob: e.target.value})} /></div>
+                <div className="w-20"><label className="text-xs text-slate-500 font-semibold">Idade</label><input type="text" readOnly className="w-full p-2 bg-slate-50 border border-slate-300 rounded text-sm text-center" value={patientData.age} /></div>
+              </div>
+              <div><label className="text-xs text-slate-500 font-semibold">Data do Exame</label><input type="date" className="w-full p-2 border border-slate-300 rounded text-sm" value={patientData.examDate} onChange={e => setPatientData({...patientData, examDate: e.target.value})} /></div>
+            </div>
+          </div>
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2"><Settings size={16}/> Equipamentos</h3>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="text-xs text-slate-500 font-semibold">Audiômetro</label><input className="w-full p-2 border border-slate-300 rounded text-sm" value={equipmentData.audiometerModel} onChange={e => setEquipmentData({...equipmentData, audiometerModel: e.target.value})} /></div>
+                <div><label className="text-xs text-slate-500 font-semibold">Calibração</label><input type="date" className="w-full p-2 border border-slate-300 rounded text-sm" value={equipmentData.audiometerCalib} onChange={e => setEquipmentData({...equipmentData, audiometerCalib: e.target.value})} /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="text-xs text-slate-500 font-semibold">Imitanciômetro</label><input className="w-full p-2 border border-slate-300 rounded text-sm" value={equipmentData.immitanceModel} onChange={e => setEquipmentData({...equipmentData, immitanceModel: e.target.value})} /></div>
+                <div><label className="text-xs text-slate-500 font-semibold">Calibração</label><input type="date" className="w-full p-2 border border-slate-300 rounded text-sm" value={equipmentData.immitanceCalib} onChange={e => setEquipmentData({...equipmentData, immitanceCalib: e.target.value})} /></div>
+              </div>
+              <div className="pt-2 border-t border-slate-100 flex gap-2">
+                <input type="text" placeholder="Nome Fonoaudiólogo(a)" className="flex-1 p-2 border border-slate-300 rounded text-sm" value={professionalData.name} onChange={e => setProfessionalData({...professionalData, name: e.target.value})} />
+                <input type="text" placeholder="CRFa" className="w-32 p-2 border border-slate-300 rounded text-sm" value={professionalData.crfa} onChange={e => setProfessionalData({...professionalData, crfa: e.target.value})} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-6">
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <div className="flex gap-2 mb-4 justify-between items-center">
+              <span className="text-sm font-bold text-slate-700 flex items-center gap-2"><BarChart3 className="w-4 h-4"/> Entrada via Gráfico</span>
+              <div className="flex bg-slate-100 p-1 rounded-lg">
+                <button onClick={() => setStimulusType('air')} className={`px-3 py-1 text-sm font-semibold rounded ${stimulusType === 'air' ? 'bg-white shadow text-slate-800' : 'text-slate-500'}`}>Via Aérea</button>
+                <button onClick={() => setStimulusType('bone')} className={`px-3 py-1 text-sm font-semibold rounded ${stimulusType === 'bone' ? 'bg-white shadow text-slate-800' : 'text-slate-500'}`}>Via Óssea</button>
+              </div>
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <div className="flex-1 max-w-[500px] border rounded-lg bg-white overflow-hidden"><SingleAudiogramGraph ear="right"/></div>
+              <div className="flex-1 max-w-[500px] border rounded-lg bg-white overflow-hidden"><SingleAudiogramGraph ear="left"/></div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden min-h-[500px]">
+            <div className="flex border-b border-slate-200">
+              {[{id: 'tonal', label: 'Tonal'}, {id: 'logo', label: 'Logo'}, {id: 'immitance', label: 'Imitâncio'}].map(tab => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 py-3 text-sm font-semibold ${activeTab === tab.id ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50' : 'text-slate-500'}`}>{tab.label}</button>
+              ))}
+            </div>
+            <div className="overflow-y-auto flex-1 p-4">
+              {activeTab === 'tonal' && (
+                <div className="space-y-4">
+                  {['air', 'bone'].map(type => (
+                    <div key={type}>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase mb-2">Via {type === 'air' ? 'Aérea' : 'Óssea'}</h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-center text-xs">
+                          <thead className="bg-slate-50"><tr><th></th>{frequencies.map(f => <th key={f} className={`p-1 text-slate-500 ${type === 'bone' && !boneFrequencies.includes(f) ? 'opacity-30' : ''}`}>{f}</th>)}</tr></thead>
+                          <tbody>
+                            <tr><td className="font-bold text-red-500 p-1">OD</td>{frequencies.map(f => <td key={f} className="p-1 relative"><input disabled={type === 'bone' && !boneFrequencies.includes(f)} className={`w-full text-center border rounded p-1 ${type === 'bone' && !boneFrequencies.includes(f) ? 'bg-slate-100' : ''}`} type="number" step="5" value={type === 'air' ? rightAir[f] ?? '' : rightBone[f] ?? ''} onChange={e => updateTonalPoint('right', type, f, e.target.value)} /></td>)}</tr>
+                            <tr><td className="font-bold text-blue-500 p-1">OE</td>{frequencies.map(f => <td key={f} className="p-1 relative"><input disabled={type === 'bone' && !boneFrequencies.includes(f)} className={`w-full text-center border rounded p-1 ${type === 'bone' && !boneFrequencies.includes(f) ? 'bg-slate-100' : ''}`} type="number" step="5" value={type === 'air' ? leftAir[f] ?? '' : leftBone[f] ?? ''} onChange={e => updateTonalPoint('left', type, f, e.target.value)} /></td>)}</tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {activeTab === 'logo' && (
+                <div className="space-y-4">
+                  {['right', 'left'].map(side => (
+                    <div key={side} className="p-3 border rounded bg-slate-50">
+                      <h4 className={`text-xs font-bold uppercase mb-2 ${side === 'right' ? 'text-red-500' : 'text-blue-500'}`}>Orelha {side === 'right' ? 'Direita' : 'Esquerda'}</h4>
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <div><label className="text-xs text-slate-500">SRT (dB)</label><input type="number" className="w-full border rounded p-1 bg-white" value={logoData[side].srt} onChange={e => setLogoData({...logoData, [side]: {...logoData[side], srt: e.target.value}})} /></div>
+                        <div><label className="text-xs text-slate-500">SDT (dB)</label><input type="number" className="w-full border rounded p-1 bg-white" value={logoData[side].sdt} onChange={e => setLogoData({...logoData, [side]: {...logoData[side], sdt: e.target.value}})} /></div>
+                      </div>
+                      <div className="border-t border-slate-200 pt-2 mt-2">
+                        <div className="text-[10px] font-bold text-slate-500 mb-1">IPFR (%)</div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><label className="text-[10px] text-slate-400">Monossílabos</label><input type="number" className="w-full border rounded p-1 bg-white" value={logoData[side].ipfrMono} onChange={e => setLogoData({...logoData, [side]: {...logoData[side], ipfrMono: e.target.value}})} /></div>
+                          <div><label className="text-[10px] text-slate-400">Dissílabos</label><input type="number" className="w-full border rounded p-1 bg-white" value={logoData[side].ipfrDi} onChange={e => setLogoData({...logoData, [side]: {...logoData[side], ipfrDi: e.target.value}})} /></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {activeTab === 'immitance' && (
+                <div className="space-y-6">
+                  <div className="h-48 mb-2 flex justify-center"><div className="w-full max-w-[500px]"><TympanogramGraph dataR={immitanceData.right} dataL={immitanceData.left} /></div></div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {['right', 'left'].map(side => (
+                      <div key={side} className={`border p-3 rounded ${side === 'right' ? 'border-red-200 bg-red-50' : 'border-blue-200 bg-blue-50'}`}>
+                        <div className={`text-xs font-bold mb-2 ${side === 'right' ? 'text-red-600' : 'text-blue-600'}`}>Orelha {side === 'right' ? 'Direita' : 'Esquerda'}</div>
+                        <div className="space-y-2">
+                          <div><label className="text-[10px] text-slate-500">Pressão Pico (daPa)</label><input className="w-full text-xs p-1 border rounded" value={immitanceData[side].pressure} onChange={e => setImmitanceData(p => ({...p, [side]: {...p[side], pressure: e.target.value}}))} /></div>
+                          <div><label className="text-[10px] text-slate-500">Complacência (Vol. Pico)</label><input className="w-full text-xs p-1 border rounded" value={immitanceData[side].compliance} onChange={e => setImmitanceData(p => ({...p, [side]: {...p[side], compliance: e.target.value}}))} /></div>
+                          <div><label className="text-[10px] text-slate-500">Posição Neutra</label><input className="w-full text-xs p-1 border rounded" value={immitanceData[side].neutral} onChange={e => setImmitanceData(p => ({...p, [side]: {...p[side], neutral: e.target.value}}))} /></div>
+                          <div><label className="text-[10px] text-slate-500">Volume em +200</label><input className="w-full text-xs p-1 border rounded" value={immitanceData[side].plus200} onChange={e => setImmitanceData(p => ({...p, [side]: {...p[side], plus200: e.target.value}}))} /></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-500 uppercase mb-2 border-b">Reflexos Acústicos</h4>
+                    {['right', 'left'].map(ear => (
+                      <div key={ear} className="mb-4">
+                        <div className={`text-xs font-bold mb-1 ${ear === 'right' ? 'text-red-600' : 'text-blue-600'}`}>Orelha {ear === 'right' ? 'Direita' : 'Esquerda'}</div>
+                        <table className="w-full text-center text-[10px] border-collapse bg-white">
+                          <thead><tr className="bg-slate-50 text-slate-500"><th className="p-1 border text-left w-20">Modo</th><th className="p-1 border">500</th><th className="p-1 border">1k</th><th className="p-1 border">2k</th><th className="p-1 border">4k</th></tr></thead>
+                          <tbody>
+                            {['contra', 'ipsi'].map(mode => (
+                              <tr key={mode}>
+                                <td className="border p-1 font-semibold uppercase text-left text-[9px]">{mode}</td>
+                                {[500, 1000, 2000, 4000].map(f => (
+                                  <td key={f} className="border p-0"><input className="w-full text-center p-1 outline-none" placeholder="-" value={immitanceData.reflexes[ear][mode][f]} onChange={(e) => { const val = e.target.value; setImmitanceData(prev => ({...prev, reflexes: {...prev.reflexes, [ear]: {...prev.reflexes[ear], [mode]: {...prev.reflexes[ear][mode], [f]: val}}}})) }} /></td>
+                                ))}
+                              </tr>
+                            ))}
+                            <tr className="bg-slate-50 font-bold">
+                              <td className="border p-1 text-left text-[9px]">Dif (VA-Contra)</td>
+                              {[500, 1000, 2000, 4000].map(f => {
+                                const thr = ear === 'right' ? rightAir[f] : leftAir[f];
+                                const ref = parseNum(immitanceData.reflexes[ear].contra[f]);
+                                const diff = (thr !== null && ref !== null) ? Math.abs(thr - ref) : '-';
+                                return <td key={f} className="border p-1 text-slate-600">{diff}</td>
+                              })}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2"><Clipboard size={16}/> Parecer Fonoaudiológico</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div><label className="text-xs text-slate-500 font-semibold mb-1 block">Conclusão / Laudo</label><textarea className="w-full h-32 p-2 border border-slate-300 rounded text-sm outline-none resize-none" value={clinicalNotes.laudo} onChange={e => setClinicalNotes({...clinicalNotes, laudo: e.target.value})}></textarea></div>
+              <div><label className="text-xs text-slate-500 font-semibold mb-1 block">Observações e Encaminhamentos</label><textarea className="w-full h-32 p-2 border border-slate-300 rounded text-sm outline-none resize-none" value={clinicalNotes.observations} onChange={e => setClinicalNotes({...clinicalNotes, observations: e.target.value})}></textarea></div>
+            </div>
+          </div>
+        </div>
+        <div className="print-only text-black text-xs font-sans max-w-[210mm] mx-auto min-h-screen flex flex-col justify-between">
+          <div>
+            <div className="border-b-2 border-black pb-2 mb-4">
+              <div className="flex justify-between items-end mb-2">
+                <h1 className="text-2xl font-bold uppercase tracking-widest">Avaliação Audiológica</h1>
+                <div className="text-right text-[10px] text-gray-500">Gerado em {new Date().toLocaleDateString()}</div>
+              </div>
+              <div className="border border-black flex">
+                <div className="flex-1 p-2 border-r border-black">
+                  <div className="grid grid-cols-[80px_1fr] gap-y-1 mb-1">
+                    <span className="font-bold">Nome:</span> <span>{patientData.name}</span>
+                    <span className="font-bold">DN / Idade:</span> <span>{patientData.dob ? new Date(patientData.dob).toLocaleDateString() : ''} ({patientData.age} anos)</span>
+                  </div>
+                </div>
+                <div className="w-[40%] p-2 bg-gray-50">
+                  <div className="grid grid-cols-[70px_1fr] gap-y-1 text-[10px]">
+                    <span className="font-bold">Audiômetro:</span> <span>{equipmentData.audiometerModel}</span>
+                    <span className="font-bold">Imitâncio:</span> <span>{equipmentData.immitanceModel}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {printConfig.tonal && (
+              <div className="mb-4">
+                <div className="flex gap-4">
+                  <div className="flex-1 border border-gray-300 p-2 rounded h-[250px]"><SingleAudiogramGraph ear="right" isPrint={true} /></div>
+                  <div className="flex-1 border border-gray-300 p-2 rounded h-[250px]"><SingleAudiogramGraph ear="left" isPrint={true} /></div>
+                </div>
+                <div className="flex justify-between text-[10px] bg-gray-100 p-1 rounded border border-gray-200 mt-2">
+                  <div><span className="font-bold text-red-700">OD (Média 500-4k):</span> {calculateWHO2021_Average(rightAir)?.toFixed(1)} dB</div>
+                  <div><span className="font-bold text-blue-700">OE (Média 500-4k):</span> {calculateWHO2021_Average(leftAir)?.toFixed(1)} dB</div>
+                </div>
+              </div>
+            )}
+            <div className="flex gap-4 h-auto">
+              <div className="flex-1 flex flex-col gap-2">
+                {printConfig.immitance && (
+                  <div className="border border-gray-300 rounded overflow-hidden">
+                    <div className="bg-gray-100 p-1 text-center font-bold text-[10px] border-b border-gray-300">REFLEXOS ACÚSTICOS (dB)</div>
+                    <div className="flex">
+                      {['right', 'left'].map(ear => (
+                        <div key={ear} className="flex-1 border-r last:border-0 border-gray-300">
+                          <div className={`text-center font-bold border-b border-gray-300 bg-gray-50 ${ear === 'right' ? 'text-red-700' : 'text-blue-700'}`}>{ear === 'right' ? 'OD' : 'OE'}</div>
+                          <table className="w-full text-center text-[9px]">
+                            <thead className="border-b border-gray-200"><tr><th>Modo</th><th>500</th><th>1k</th><th>2k</th><th>4k</th></tr></thead>
+                            <tbody>
+                              <tr className="border-b border-gray-100"><td className="font-semibold text-left pl-1">Contra</td>{[500, 1000, 2000, 4000].map(f => <td key={f}>{immitanceData.reflexes[ear].contra[f]}</td>)}</tr>
+                              <tr className="border-b border-gray-100"><td className="font-semibold text-left pl-1">Ipsi</td>{[500, 1000, 2000, 4000].map(f => <td key={f}>{immitanceData.reflexes[ear].ipsi[f]}</td>)}</tr>
+                              <tr><td className="font-semibold text-left pl-1">Dif</td>{[500, 1000, 2000, 4000].map(f => {
+                                const thr = ear === 'right' ? rightAir[f] : leftAir[f];
+                                const ref = parseNum(immitanceData.reflexes[ear].contra[f]);
+                                const diff = (thr !== null && ref !== null) ? Math.abs(thr - ref) : '-';
+                                return <td key={f}>{diff}</td>
+                              })}</tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="w-[40%] flex flex-col gap-2">
+                {printConfig.immitance && (
+                  <div className="border border-gray-300 p-2 rounded">
+                    <div className="h-[80px] w-full mb-1"><TympanogramGraph dataR={immitanceData.right} dataL={immitanceData.left} /></div>
+                    <div className="grid grid-cols-2 text-[9px] gap-1">
+                      <div><span className="text-red-700 font-bold block">OD</span>V+200: {immitanceData.right.plus200} | Pr: {immitanceData.right.pressure} | Co: {immitanceData.right.compliance}</div>
+                      <div><span className="text-blue-700 font-bold block">OE</span>V+200: {immitanceData.left.plus200} | Pr: {immitanceData.left.pressure} | Co: {immitanceData.left.compliance}</div>
+                    </div>
+                  </div>
+                )}
+                {printConfig.logo && (
+                  <div className="border border-gray-300 rounded overflow-hidden">
+                    <table className="w-full text-center text-[10px]">
+                      <thead className="bg-gray-100 font-bold"><tr><th className="p-1 text-left">LOGO</th><th>SRT</th><th>SDT</th><th>M</th><th>D</th></tr></thead>
+                      <tbody>
+                        <tr className="border-t border-gray-200"><td className="font-bold text-red-600 p-1 text-left">OD</td><td>{logoData.right.srt}</td><td>{logoData.right.sdt}</td><td>{logoData.right.ipfrMono}</td><td>{logoData.right.ipfrDi}</td></tr>
+                        <tr className="border-t border-gray-200"><td className="font-bold text-blue-600 p-1 text-left">OE</td><td>{logoData.left.srt}</td><td>{logoData.left.sdt}</td><td>{logoData.left.ipfrMono}</td><td>{logoData.left.ipfrDi}</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+            {printConfig.report && (
+              <div className="mt-4 border-t border-slate-300 pt-2">
+                <div className="mb-2">
+                  <h4 className="font-bold text-[10px] uppercase">Laudo Fonoaudiológico:</h4>
+                  <p className="whitespace-pre-wrap text-[10px] leading-snug">{clinicalNotes.laudo}</p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-[10px] uppercase">Observações:</h4>
+                  <p className="whitespace-pre-wrap text-[10px] leading-snug">{clinicalNotes.observations}</p>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center pb-8 mt-auto">
+            <div className="text-center w-64">
+              <div className="border-t border-black mb-1 w-full"></div>
+              <div className="font-bold text-[11px] uppercase">{professionalData.name}</div>
+              <div className="text-[10px]">Fonoaudiólogo(a) - CRFa: {professionalData.crfa}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const root = createRoot(document.getElementById('root'));
+root.render(<AudiogramApp />);
+</script>
+</body>
+</html>
